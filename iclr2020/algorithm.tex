@@ -1,0 +1,18 @@
+\section{Algorithm}
+
+\begin{algorithm}[h]
+\caption{Entropy Regularized Policy Gradient (MENT/REINFOCE)}
+\label{alg:erpg_ment_reinforce}
+\begin{algorithmic}
+   \STATE {\bfseries Input:} State feature $\rvs$, learning rate $\eta > 0$, temperature $\tau > 0$.
+   \STATE Initialize $\rvtheta_1$. $\rvo_1 \triangleq \rvo(\rvtheta_1)$ and $\rvpi_1 \triangleq \softmax(\rvo_1)$.
+   \FOR{$t=1$ {\bfseries to} $T$}
+   \STATE Get an unbiased estimation of $\rvr_t$.
+   \STATE Calculate the policy gradient 
+   \begin{equation*}
+       \nabla{(\rvtheta_t)} \gets \frac{d \left\{ \rvpi_t^\top \rvr_t  - \tau \rvpi_t^\top \log{\rvpi_t} \right\}}{d \rvtheta_t}.
+   \end{equation*}
+   \STATE Update $\rvtheta_{t+1} \gets \rvtheta_{t} + \eta \nabla{(\rvtheta_t)}$. $\rvpi_{t+1} \triangleq \softmax( \rvo(\rvtheta_{t+1}) )$.
+   \ENDFOR
+\end{algorithmic}
+\end{algorithm}

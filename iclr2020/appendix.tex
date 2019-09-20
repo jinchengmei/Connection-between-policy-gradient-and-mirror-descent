@@ -1,19 +1,20 @@
-\section{Appendix}
+\section{Proofs}
 
-\begin{lem}
-
-\end{lem}
+{\bf \cref{lem:equivalence_ment_reinforce}.} Using importance sampling in \cref{alg:erpg_ment_reinforce},
+\begin{equation*}
+    \nabla{(\rvtheta_t)} = \expectation\limits_{\rho \sim \rvpi_t}{ \left( \rvr_t(\rho) - \log{\rvpi_t(\rho)} \right) \cdot \nabla{ \log{\rvpi_t(\rho)} } }, \quad \forall t \ge 1.
+\end{equation*}
 \begin{proof}
-First, we show that the update using $\nabla(\rvo_t)$ is actually policy gradient,
+According to the gradient definition in \cref{alg:erpg_ment_reinforce}, $\forall t \ge 1$,
 \begin{equation*}
 \begin{split}
-    \nabla(\rvo_t) &= \frac{d \left\{ \rvpi(\rvo_t)^\top \rvr_t - \rvpi(\rvo_t)^\top \log{\rvpi(\rvo_t)} \right\} }{d \rvo_t} \\
+    \nabla{(\rvtheta_t)} &= \frac{d \left\{ \rvpi(\rvo_t)^\top \rvr_t - \rvpi(\rvo_t)^\top \log{\rvpi(\rvo_t)} \right\} }{d \rvtheta_t} \\
     &= \left( \frac{d \rvpi_t}{d \rvo_t} \right)^\top \left( \rvr_t - \rvone - \log{\rvpi_t} \right) \\
-    &= \left( \frac{d \rvpi_t}{d \rvo_t} \right)^\top \left( \rvr_t - \log{\rvpi_t} \right) \\
-    &= \left( \frac{d \rvpi_t}{d \rvo_t} \right)^\top \left[ \sum\limits_{i \in [K]}{ \rvpi_t(i) \cdot \rvone_{ \left\{ \frac{\rvr_t(i) - \log{\rvpi_t(i)} }{\rvpi_t(i)} \right\} } } \right]  \\
-    &= \sum\limits_{i \in [K]}{ \rvpi_t(i) \cdot \left[ \left( \frac{d \rvpi_t}{d \rvo_t} \right)^\top \rvone_{ \left\{ \frac{\rvr_t(i) - \log{\rvpi_t(i)} }{\rvpi_t(i)} \right\} } \right] } \\
-    &= \sum\limits_{i \in [K]}{ \rvpi_t(i) \cdot \left[ \frac{\rvr_t(i) - \log{\rvpi_t(i)} }{\rvpi_t(i)} \cdot \frac{d \rvpi_t(i)}{d \rvo_t}  \right] } \\
-    &= \expectation\limits_{i \sim \rvpi_t}{ \left( \rvr_t(i) - \log{\rvpi_t(i)} \right) \cdot \frac{d \log{\rvpi_t(i)} }{d \rvo_t} }.
+    &= \left( \frac{d \rvpi_t}{d \rvtheta_t} \right)^\top \left( \rvr_t - \log{\rvpi_t} \right) \\
+    &= \left( \frac{d \rvpi_t}{d \rvtheta_t} \right)^\top \left[ \sum\limits_{i \in [K]}{ \rvpi_t(i) \cdot \rvone_{ \left\{ \frac{\rvr_t(i) - \log{\rvpi_t(i)} }{\rvpi_t(i)} \right\} } } \right]  \\
+    &= \sum\limits_{i \in [K]}{ \rvpi_t(i) \cdot \left[ \left( \frac{d \rvpi_t}{d \rvtheta_t} \right)^\top \rvone_{ \left\{ \frac{\rvr_t(i) - \log{\rvpi_t(i)} }{\rvpi_t(i)} \right\} } \right] } \\
+    &= \sum\limits_{i \in [K]}{ \rvpi_t(i) \cdot \left[ \frac{\rvr_t(i) - \log{\rvpi_t(i)} }{\rvpi_t(i)} \cdot \frac{d \rvpi_t(i)}{d \rvtheta_t}  \right] } \\
+    &= \expectation\limits_{\rho \sim \rvpi_t}{ \left( \rvr_t(\rho) - \log{\rvpi_t(\rho)} \right) \cdot \nabla{ \log{\rvpi_t(\rho)} } }. \qedhere
 \end{split}
 \end{equation*}
 \end{proof}

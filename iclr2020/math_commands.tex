@@ -2,6 +2,13 @@
 
 \usepackage{amsmath,amsfonts,bm}
 \usepackage{amssymb,amsthm}
+\usepackage{algorithm,algorithmic}
+\usepackage[capitalize]{cleveref}
+
+\crefname{prop}{Proposition}{Propositions}
+\crefname{thm}{Theorem}{Theorems}
+\crefname{lem}{Lemma}{Lemmas}
+\crefname{algorithm}{Algorithm}{Algorithms}
 
 % Mark sections of captions for referring to divisions of figures
 \newcommand{\figleft}{{\em (Left)}}
@@ -523,3 +530,6 @@
 \def\rvzero{{\mathbf{0}}}
 
 \DeclareMathOperator*{\expectation}{\sE}
+
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:}}

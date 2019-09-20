@@ -2,11 +2,11 @@
 \documentclass{article} % For LaTeX2e
 \usepackage{iclr2020_conference,times}
 
-% Optional math commands from https://github.com/goodfeli/dlbook_notation.
-\input{math_commands.tex}
-
 \usepackage{hyperref}
 \usepackage{url}
+
+% Optional math commands from https://github.com/goodfeli/dlbook_notation.
+\input{math_commands.tex}
 
 
 \title{Formatting Instructions for ICLR 2020 \\ Conference Submissions}
@@ -53,20 +53,17 @@ Address \\
 \maketitle
 
 \begin{abstract}
-Problem: contextual bandit
-
-nnet: generalization across $\rvs, \rva$
-
-theoretically justified
+\input{abstract.tex}
 \end{abstract}
 
 \section{Introduction}
 
 \section{Background}
 
-\section{Algorithm}
 
-\section{Connection}
+\input{algorithm.tex}
+
+\input{connections.tex}
 
 \section{Bound}
 
