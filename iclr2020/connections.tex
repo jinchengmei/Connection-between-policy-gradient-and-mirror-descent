@@ -7,7 +7,7 @@ One common way to get an unbiased estimation of $\rvr_t$ is to use importance sa
 		0, & \text{otherwise}.
 		\end{cases}
 \end{equation*}
-This estimator is unbiased
+It is direct to check this estimator is unbiased
 \begin{equation*}
     \expectation\limits_{A_t \sim \rvpi_t}{ \rvone_{ \left\{ \frac{\rvr_t(A_t) }{\rvpi_t(A_t)}  \right\} } } = \sum\limits_{ i \in [K] }{ \rvpi_t(i) \cdot \rvone_{ \left\{ \frac{\rvr_t(i) }{\rvpi_t(i)}  \right\} }  } = \sum\limits_{i \in [K] }{ \rvone_{ \left\{ \rvr_t(i)  \right\} } } = \rvr_t.
 \end{equation*}
@@ -17,6 +17,30 @@ We first show that when the importance sampling estimator is used, \cref{alg:erp
 \label{lem:equivalence_ment_reinforce}
 Using the above importance sampling in \cref{alg:erpg_ment_reinforce},
 \begin{equation*}
-    \nabla{(\rvtheta_t)} = \expectation\limits_{\rho \sim \rvpi_t}{ \left( \rvr_t(\rho) - \log{\rvpi_t(\rho)} \right) \cdot \nabla{ \log{\rvpi_t(\rho)} } }, \quad \forall t \ge 1.
+    \nabla{(\rvtheta_t)} = \expectation\limits_{\rho \sim \rvpi_t}{ \left( \rvr_t(\rho) - \tau \log{\rvpi_t(\rho)} \right) \cdot \nabla{ \log{\rvpi_t(\rho)} } }, \quad \forall t \ge 1.
 \end{equation*}
 \end{lem}
+
+Next, our key observation reveals a connection between the practical entropy regularized policy gradient method and an optimal adversarial bandit algorithm Exp3, or Mirror Descent (MD) in general. In particular, if learning happens in the logit space, then $\rvo_t$ in \cref{alg:erpg_ment_reinforce}, is actually an good approximation of the average of all the historic unbiased estimation. The approximation error decays fast, in the order of $O\left( \frac{1}{t} \right)$.
+
+\begin{thm}
+\label{thm:logit_mean_approximation}
+Let $\rvr_1, \rvr_2, \dots, \rvr_t \in \left[ 0, 1  \right]^K$. Denote $\rvr_{1:t} \triangleq \sum\limits_{i=1}^{t}{\rvr_i}$, and $\hat{\rvr}_t \triangleq \frac{\rvr_{1:t}}{t}$. Consider the following policy gradient update in logit space,
+\begin{equation*}
+\begin{split}
+    \rvo_{t+1} &= \rvo_t + \eta \cdot \nabla(\rvo_t),
+\end{split}
+\end{equation*}
+where $\nabla(\rvo_t) \triangleq \frac{d \left\{ \rvpi(\rvo_t)^\top \rvr_t - \tau \rvpi(\rvo_t)^\top \log{\rvpi(\rvo_t)} \right\} }{d \rvo_t} $ is the policy gradient with respect to $\rvo_t$. If the learning rate $\eta$ at iteration $t$ satisfies
+\begin{equation*}
+\begin{split}
+    \eta \ge \frac{ \frac{1}{t+1} + \frac{1}{(t+1)(t+C)} }{ \frac{1}{e K} \cdot \left( 1 - \frac{2 C \sqrt{K}}{t+1} \right)  } = e K \cdot \left( 1 + \frac{1}{t+C} \right) \cdot \frac{1}{t+1-2C\sqrt{K}} = O\left( \frac{1}{t} \right),
+\end{split}
+\end{equation*}
+for some constant $C > 0$, then there exists a scalar $c_{t-1} \in \sR$, such that
+\begin{equation*}
+    \left\| \rvo_{t} - \hat{\rvr}_{t-1} + c_{t-1} \rvone \right\| \le \frac{C \sqrt{K}}{t}, \quad \forall t \ge 1.
+\end{equation*}
+\end{thm}
+
+Policy gradient method works in an online fashion, i.e., it just collects on policy samples to estimate learning signal at current step $t$.  \cref{thm:logit_mean_approximation} indicates that with entropy regularization, it actually approximates the average of all the histories without explicitly memorizing them or maintaining any statistics. And the approximation is good, with error decaying as $O\left( \frac{1}{t} \right)$. First, we can take advantage of this approximation by converting the logit into policy, and the resultant algorithm will enjoy provable guarantees. This is because the approximation is optimal, as shown in next section. Second, unlike traditional bandit algorithms, the policy gradient is ``tabular free'', i.e., it does not utilize any tabular statistics, such as empirical mean and visit count. Therefore it can be scaled up in practice.

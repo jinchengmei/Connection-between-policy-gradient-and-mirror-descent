@@ -2,55 +2,52 @@
 
 {\bf \cref{lem:equivalence_ment_reinforce}.} Using importance sampling in \cref{alg:erpg_ment_reinforce},
 \begin{equation*}
-    \nabla{(\rvtheta_t)} = \expectation\limits_{\rho \sim \rvpi_t}{ \left( \rvr_t(\rho) - \log{\rvpi_t(\rho)} \right) \cdot \nabla{ \log{\rvpi_t(\rho)} } }, \quad \forall t \ge 1.
+    \nabla{(\rvtheta_t)} = \expectation\limits_{\rho \sim \rvpi_t}{ \left( \rvr_t(\rho) - \tau \log{\rvpi_t(\rho)} \right) \cdot \nabla{ \log{\rvpi_t(\rho)} } }, \quad \forall t \ge 1.
 \end{equation*}
 \begin{proof}
 According to the gradient definition in \cref{alg:erpg_ment_reinforce}, $\forall t \ge 1$,
 \begin{equation*}
 \begin{split}
-    \nabla{(\rvtheta_t)} &= \frac{d \left\{ \rvpi(\rvo_t)^\top \rvr_t - \rvpi(\rvo_t)^\top \log{\rvpi(\rvo_t)} \right\} }{d \rvtheta_t} \\
-    &= \left( \frac{d \rvpi_t}{d \rvo_t} \right)^\top \left( \rvr_t - \rvone - \log{\rvpi_t} \right) \\
-    &= \left( \frac{d \rvpi_t}{d \rvtheta_t} \right)^\top \left( \rvr_t - \log{\rvpi_t} \right) \\
-    &= \left( \frac{d \rvpi_t}{d \rvtheta_t} \right)^\top \left[ \sum\limits_{i \in [K]}{ \rvpi_t(i) \cdot \rvone_{ \left\{ \frac{\rvr_t(i) - \log{\rvpi_t(i)} }{\rvpi_t(i)} \right\} } } \right]  \\
-    &= \sum\limits_{i \in [K]}{ \rvpi_t(i) \cdot \left[ \left( \frac{d \rvpi_t}{d \rvtheta_t} \right)^\top \rvone_{ \left\{ \frac{\rvr_t(i) - \log{\rvpi_t(i)} }{\rvpi_t(i)} \right\} } \right] } \\
-    &= \sum\limits_{i \in [K]}{ \rvpi_t(i) \cdot \left[ \frac{\rvr_t(i) - \log{\rvpi_t(i)} }{\rvpi_t(i)} \cdot \frac{d \rvpi_t(i)}{d \rvtheta_t}  \right] } \\
-    &= \expectation\limits_{\rho \sim \rvpi_t}{ \left( \rvr_t(\rho) - \log{\rvpi_t(\rho)} \right) \cdot \nabla{ \log{\rvpi_t(\rho)} } }. \qedhere
+    \nabla{(\rvtheta_t)} &= \frac{d \left\{ \rvpi(\rvo_t)^\top \rvr_t - \tau  \rvpi(\rvo_t)^\top \log{\rvpi(\rvo_t)} \right\} }{d \rvtheta_t} \\
+    &= \left( \frac{d \rvpi_t}{d \rvo_t} \right)^\top \left( \rvr_t - \tau \rvone - \tau \log{\rvpi_t} \right) \\
+    &= \left( \frac{d \rvpi_t}{d \rvtheta_t} \right)^\top \left( \rvr_t - \tau \log{\rvpi_t} \right) \\
+    &= \left( \frac{d \rvpi_t}{d \rvtheta_t} \right)^\top \left[ \sum\limits_{i \in [K]}{ \rvpi_t(i) \cdot \rvone_{ \left\{ \frac{\rvr_t(i) - \tau \log{\rvpi_t(i)} }{\rvpi_t(i)} \right\} } } \right] \quad \left( \text{importance sampling} \right) \\
+    &= \sum\limits_{i \in [K]}{ \rvpi_t(i) \cdot \left[ \left( \frac{d \rvpi_t}{d \rvtheta_t} \right)^\top \rvone_{ \left\{ \frac{\rvr_t(i) - \tau \log{\rvpi_t(i)} }{\rvpi_t(i)} \right\} } \right] } \\
+    &= \sum\limits_{i \in [K]}{ \rvpi_t(i) \cdot \left[ \frac{\rvr_t(i) - \tau  \log{\rvpi_t(i)} }{\rvpi_t(i)} \cdot \frac{d \rvpi_t(i)}{d \rvtheta_t}  \right] } \\
+    &= \expectation\limits_{\rho \sim \rvpi_t}{ \left( \rvr_t(\rho) - \tau  \log{\rvpi_t(\rho)} \right) \cdot \nabla{ \log{\rvpi_t(\rho)} } }. \qedhere
 \end{split}
 \end{equation*}
 \end{proof}
 
-\begin{lem}
-Let $\rvr_1, \rvr_2, \dots, \rvr_t \in \left[ 0, 1  \right]^K$. Denote $\rvr_{1:t} \triangleq \sum\limits_{i=1}^{t}{\rvr_i}$, and $\hat{\rvr}_t \triangleq \frac{\rvr_{1:t}}{t}$. Let $\rvo \in \sR^K$ be any logit vector, and $\rvpi(\rvo) \triangleq \softmax(\rvo)$ be the softmax policy of $\rvo$. For any policy $\rvpi$, define $\rmH\left( \rvpi \right) \triangleq \Delta \left( \rvpi \right) - \rvpi \rvpi^\top$, where $\Delta \left( \rvpi \right) \in \sR^{K \times K}$ is a diagonal matrix, with $\rvpi$ as its diagonal. Define the entropy regularized policy gradient with respect to logit at step $t$,
+
+{\bf \cref{thm:logit_mean_approximation}.} Let $\rvr_1, \rvr_2, \dots, \rvr_t \in \left[ 0, 1  \right]^K$. Denote $\rvr_{1:t} \triangleq \sum\limits_{i=1}^{t}{\rvr_i}$, and $\hat{\rvr}_t \triangleq \frac{\rvr_{1:t}}{t}$. Consider the following policy gradient update in logit space,
 \begin{equation*}
 \begin{split}
-    \nabla(\rvo_t) &\triangleq \frac{d \left\{ \rvpi(\rvo_t)^\top \rvr_t - \rvpi(\rvo_t)^\top \log{\rvpi(\rvo_t)} \right\} }{d \rvo_t} \\
-    &= \left[ \Delta \left( \rvpi(\rvo_t) \right) - \rvpi(\rvo_t) \rvpi(\rvo_t)^\top \right] \left( \rvr_t - \rvo_t \right).
+    \rvo_{t+1} &= \rvo_t + \eta \cdot \nabla(\rvo_t),
 \end{split}
 \end{equation*}
-Denote $\rmH_t \triangleq \rmH(\rvpi(\rvo_t))$.
-Consider the entropy regularized policy gradient update,
-\begin{equation*}
-\begin{split}
-    \rvo_{t+1} &= \rvo_t + \eta \cdot \nabla(\rvo_t) \\
-    &= \rvo_t + \eta \cdot \rmH_t \left( \rvr_t - \rvo_t \right).
-\end{split}
-\end{equation*}
-If the learning rate $\eta$ at iteration $t$ satisfies
+where $\nabla(\rvo_t) \triangleq \frac{d \left\{ \rvpi(\rvo_t)^\top \rvr_t - \tau \rvpi(\rvo_t)^\top \log{\rvpi(\rvo_t)} \right\} }{d \rvo_t} $ is the policy gradient with respect to $\rvo_t$. If the learning rate $\eta$ at iteration $t$ satisfies
 \begin{equation*}
 \begin{split}
     \eta \ge \frac{ \frac{1}{t+1} + \frac{1}{(t+1)(t+C)} }{ \frac{1}{e K} \cdot \left( 1 - \frac{2 C \sqrt{K}}{t+1} \right)  } = e K \cdot \left( 1 + \frac{1}{t+C} \right) \cdot \frac{1}{t+1-2C\sqrt{K}} = O\left( \frac{1}{t} \right),
 \end{split}
 \end{equation*}
-then there exists a scalar $c_t \in \sR$, such that
+for some constant $C > 0$, then there exists a scalar $c_{t-1} \in \sR$, such that
 \begin{equation*}
-    \left\| \rvo_{t+1} - \hat{\rvr}_{t} + c_t \rvone \right\| \le \frac{C \sqrt{K}}{t+1}, \quad \forall t \ge 0.
+    \left\| \tau \rvo_{t} - \hat{\rvr}_{t-1} + c_{t-1} \rvone \right\| \le \frac{C \sqrt{K}}{t}, \quad \forall t \ge 1.
 \end{equation*}
-\end{lem}
 \begin{proof}
-We use induction on $t$. For $t=0$, and $c_0 = 0$,
+For any policy $\rvpi$, define $\rmH\left( \rvpi \right) \triangleq \Delta \left( \rvpi \right) - \rvpi \rvpi^\top$, where $\Delta \left( \rvpi \right) \in \sR^{K \times K}$ is a diagonal matrix, with $\rvpi$ as its diagonal. First, calculate the policy gradient with respect to logit at step $t$,
 \begin{equation*}
 \begin{split}
-    \left\| \rvo_{1} - \hat{\rvr}_0 + c_0 \rvone \right\| = \left\| \rvzero \right\| = 0 \le C \sqrt{K}.
+    \nabla(\rvo_t) &\triangleq \frac{d \left\{ \rvpi(\rvo_t)^\top \rvr_t - \tau \rvpi(\rvo_t)^\top \log{\rvpi(\rvo_t)} \right\} }{d \rvo_t} \\
+    &= \rmH_t \left( \rvr_t - \tau \rvo_t \right),
+\end{split}
+\end{equation*}
+where $\rmH_t \triangleq \rmH(\rvpi(\rvo_t))$. Next, use induction on $t$. For $t=1$, let $c_0 = 0$,
+\begin{equation*}
+\begin{split}
+    \left\| \tau \rvo_{1} - \hat{\rvr}_0 + c_0 \rvone \right\| = \left\| \rvzero \right\| = 0 \le C \sqrt{K}.
 \end{split}
 \end{equation*}
 Assume $\left\| \rvo_{t} - \hat{\rvr}_{t-1} + c_{t-1} \rvone \right\| \le \frac{C \sqrt{K}}{t}$ for some $t \ge 1$. There  are two different cases of the update.
