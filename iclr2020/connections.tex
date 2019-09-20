@@ -34,13 +34,13 @@ Let $\rvr_1, \rvr_2, \dots, \rvr_t \in \left[ 0, 1  \right]^K$. Denote $\rvr_{1:
 where $\nabla(\rvo_t) \triangleq \frac{d \left\{ \rvpi(\rvo_t)^\top \rvr_t - \tau \rvpi(\rvo_t)^\top \log{\rvpi(\rvo_t)} \right\} }{d \rvo_t} $ is the policy gradient with respect to $\rvo_t$. If the learning rate $\eta$ at iteration $t$ satisfies
 \begin{equation*}
 \begin{split}
-    \eta \ge \frac{ \frac{1}{t+1} + \frac{1}{(t+1)(t+C)} }{ \frac{1}{e K} \cdot \left( 1 - \frac{2 C \sqrt{K}}{t+1} \right)  } = e K \cdot \left( 1 + \frac{1}{t+C} \right) \cdot \frac{1}{t+1-2C\sqrt{K}} = O\left( \frac{1}{t} \right),
+    \eta \ge \frac{ \frac{1}{t+1} + \frac{1}{(t+1)(t+C)} }{ \frac{1}{K \cdot \exp\left\{ \frac{1}{\tau} \right\} } \cdot \left( 1 - \frac{2 C \sqrt{K}}{\tau t} \right)  } = K \cdot \exp\left\{ \frac{1}{\tau} \right\} \cdot \left( 1 + \frac{1}{t+C} \right) \cdot \frac{t}{\left( t+1\right) \left( t - \frac{2C\sqrt{K}}{\tau} \right)} = O\left( \frac{1}{t} \right),
 \end{split}
 \end{equation*}
 for some constant $C > 0$, then there exists a scalar $c_{t-1} \in \sR$, such that
 \begin{equation*}
-    \left\| \rvo_{t} - \hat{\rvr}_{t-1} + c_{t-1} \rvone \right\| \le \frac{C \sqrt{K}}{t}, \quad \forall t \ge 1.
+    \left\| \tau \rvo_{t} - \hat{\rvr}_{t-1} + c_{t-1} \rvone \right\| \le \frac{C \sqrt{K}}{t}, \quad \forall t \ge 1.
 \end{equation*}
 \end{thm}
 
-Policy gradient method works in an online fashion, i.e., it just collects on policy samples to estimate learning signal at current step $t$.  \cref{thm:logit_mean_approximation} indicates that with entropy regularization, it actually approximates the average of all the histories without explicitly memorizing them or maintaining any statistics. And the approximation is good, with error decaying as $O\left( \frac{1}{t} \right)$. First, we can take advantage of this approximation by converting the logit into policy, and the resultant algorithm will enjoy provable guarantees. This is because the approximation is optimal, as shown in next section. Second, unlike traditional bandit algorithms, the policy gradient is ``tabular free'', i.e., it does not utilize any tabular statistics, such as empirical mean and visit count. Therefore it can be scaled up in practice.
+Policy gradient method works in an online fashion, i.e., at step $t$, it just collects on policy samples to estimate learning signal at current step $t$.  \cref{thm:logit_mean_approximation} indicates that with entropy regularization, it actually approximates the average of all the histories up to step $t$ without explicitly memorizing them or maintaining any statistics. And the approximation is good, with error decaying as $O\left( \frac{1}{t} \right)$. First, we can take advantage of this approximation by converting the logit into policy, and the resultant algorithm will enjoy provable guarantees. This is because the approximation is optimal, as shown in next section. Second, unlike traditional bandit algorithms, the policy gradient is ``tabular free'', i.e., it does not utilize any tabular statistics, such as empirical mean and visit count. Therefore it can be scaled up in practice.

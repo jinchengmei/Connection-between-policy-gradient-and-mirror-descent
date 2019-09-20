@@ -29,7 +29,7 @@ According to the gradient definition in \cref{alg:erpg_ment_reinforce}, $\forall
 where $\nabla(\rvo_t) \triangleq \frac{d \left\{ \rvpi(\rvo_t)^\top \rvr_t - \tau \rvpi(\rvo_t)^\top \log{\rvpi(\rvo_t)} \right\} }{d \rvo_t} $ is the policy gradient with respect to $\rvo_t$. If the learning rate $\eta$ at iteration $t$ satisfies
 \begin{equation*}
 \begin{split}
-    \eta \ge \frac{ \frac{1}{t+1} + \frac{1}{(t+1)(t+C)} }{ \frac{1}{e K} \cdot \left( 1 - \frac{2 C \sqrt{K}}{t+1} \right)  } = e K \cdot \left( 1 + \frac{1}{t+C} \right) \cdot \frac{1}{t+1-2C\sqrt{K}} = O\left( \frac{1}{t} \right),
+    \eta \ge \frac{ \frac{1}{t+1} + \frac{1}{(t+1)(t+C)} }{ \frac{1}{K \cdot \exp\left\{ \frac{1}{\tau} \right\} } \cdot \left( 1 - \frac{2 C \sqrt{K}}{\tau t} \right)  } = K \cdot \exp\left\{ \frac{1}{\tau} \right\} \cdot \left( 1 + \frac{1}{t+C} \right) \cdot \frac{t}{\left( t+1\right) \left( t - \frac{2C\sqrt{K}}{\tau} \right)} = O\left( \frac{1}{t} \right),
 \end{split}
 \end{equation*}
 for some constant $C > 0$, then there exists a scalar $c_{t-1} \in \sR$, such that
@@ -50,24 +50,24 @@ where $\rmH_t \triangleq \rmH(\rvpi(\rvo_t))$. Next, use induction on $t$. For $
     \left\| \tau \rvo_{1} - \hat{\rvr}_0 + c_0 \rvone \right\| = \left\| \rvzero \right\| = 0 \le C \sqrt{K}.
 \end{split}
 \end{equation*}
-Assume $\left\| \rvo_{t} - \hat{\rvr}_{t-1} + c_{t-1} \rvone \right\| \le \frac{C \sqrt{K}}{t}$ for some $t \ge 1$. There  are two different cases of the update.
+Assume $\left\| \tau \rvo_{t} - \hat{\rvr}_{t-1} + c_{t-1} \rvone \right\| \le \frac{C \sqrt{K}}{t}$ for some $t \ge 1$. There  are two different cases of the update.
 
-\textbf{First case:} $\rvr_t - \rvo_t = a_t \rvone$, where $a_t \in \sR$. This means $\rvo_{t+1} = \rvo_{t}$. Let $c_t \triangleq \frac{(t-1)c_{t-1}}{t} +  \frac{a_t}{t}$, we have
+\textbf{First case:} $\rvr_t - \tau \rvo_t = a_t \rvone$, for some $a_t \in \sR$. This means $\rvo_{t+1} = \rvo_{t}$ because $\rmH_t a_t \rvone = \rvzero$. Let $c_t \triangleq \frac{(t-1)c_{t-1}}{t} +  \frac{a_t}{t}$, we have
 \begin{equation*}
 \begin{split}
-    \left\| \rvo_{t+1} - \hat{\rvr}_t + c_t \rvone \right\| &= \left\| \rvo_{t} - \hat{\rvr}_t + \frac{(t-1)c_{t-1}}{t} \rvone + \frac{a_t}{t} \rvone \right\| \\
-    &= \left\| \rvo_{t} - \frac{\rvr_{1:t-1} + \rvr_t}{t-1} \cdot \frac{t-1}{t} + \frac{(t-1)c_{t-1}}{t} \rvone + \frac{a_t}{t} \rvone \right\| \\
-    &= \left\| \rvo_{t} - \hat{\rvr}_{t-1} + \frac{\hat{\rvr}_{t-1}}{t} - \frac{\rvo_t + a_t \rvone}{t} + \frac{(t-1)c_{t-1}}{t} \rvone + \frac{a_t}{t} \rvone \right\| \\
-    &= \left\| \frac{t-1}{t} \cdot \left( \rvo_{t} - \hat{\rvr}_{t-1} + c_{t-1} \rvone \right) \right\| \\
+    \left\| \tau \rvo_{t+1} - \hat{\rvr}_t + c_t \rvone \right\| &= \left\| \tau \rvo_{t} - \hat{\rvr}_t + \frac{(t-1)c_{t-1}}{t} \rvone + \frac{a_t}{t} \rvone \right\| \\
+    &= \left\| \tau \rvo_{t} - \frac{\rvr_{1:t-1} + \rvr_t}{t-1} \cdot \frac{t-1}{t} + \frac{(t-1)c_{t-1}}{t} \rvone + \frac{a_t}{t} \rvone \right\| \\
+    &= \left\| \tau \rvo_{t} - \hat{\rvr}_{t-1} + \frac{\hat{\rvr}_{t-1}}{t} - \frac{\tau \rvo_t + a_t \rvone}{t} + \frac{(t-1)c_{t-1}}{t} \rvone + \frac{a_t}{t} \rvone \right\| \\
+    &= \left\| \frac{t-1}{t} \cdot \left( \tau \rvo_{t} - \hat{\rvr}_{t-1} + c_{t-1} \rvone \right) \right\| \\
     &\le \frac{t-1}{t} \cdot \frac{C \sqrt{K}}{t} \\
     &\le \frac{C \sqrt{K}}{t+1}.
 \end{split}
 \end{equation*}
 
-\textbf{Second case:} $\rvr_t - \rvo_t \not= a_t \rvone$, for any $a_t \in \sR$. Then $\rvo_{t+1} \not= \rvo_t$. By the inductive hypothesis,
+\textbf{Second case:} $\rvr_t - \tau \rvo_t \not= a_t \rvone$, for any $a_t \in \sR$. Then $\rvo_{t+1} \not= \rvo_t$. By the inductive hypothesis,
 \begin{equation*}
 \begin{split}
-    \left| \rvo_{t}(i) - \hat{\rvr}_{t-1}(i) + c_{t-1} \right| \le \left\| \rvo_{t} - \hat{\rvr}_{t-1} + c_{t-1} \rvone \right\| \le \frac{C \sqrt{K}}{t}, \quad \forall i \in [K].
+    \left| \tau \rvo_{t}(i) - \hat{\rvr}_{t-1}(i) + c_{t-1} \right| \le \left\| \tau \rvo_{t} - \hat{\rvr}_{t-1} + c_{t-1} \rvone \right\| \le \frac{C \sqrt{K}}{t}, \quad \forall i \in [K].
 \end{split}
 \end{equation*}
 Denote $i_{\min} \triangleq \argmin\limits_{i \in [K]}{\rvo_t(i)} $, $i_{\max} \triangleq \argmax\limits_{i \in [K]}{\rvo_t(i)} $, and $\gF(\rvo_t) \triangleq \log{\sum\limits_{i = 1}^K{\exp\left\{ \rvo_t(i) \right\}} } \le \rvo_t(i_{\max}) + \log{K}$. The smallest probability of $\rvpi_t$ can be lower bounded as
@@ -76,27 +76,27 @@ Denote $i_{\min} \triangleq \argmin\limits_{i \in [K]}{\rvo_t(i)} $, $i_{\max} \
     \min\limits_{i \in [K]}{\rvpi_t(i)} &= \min\limits_{i \in [K]}{ \exp\left\{ \rvo_t(i) - \gF(\rvo_t) \right\} } \\
     &= \exp\left\{ \min\limits_{i \in [K]}{\rvo_t(i)} - \gF(\rvo_t) \right\} \\
     &\ge \exp\left\{ \rvo_t(i_{\min}) - \rvo_t(i_{\max}) - \log{K} \right\} \\
-    &\ge \exp\left\{ \hat{\rvr}_{t-1}(i_{\min}) - \frac{C \sqrt{K}}{t} - \hat{\rvr}_{t-1}(i_{\max}) - \frac{C \sqrt{K}}{t} - \log{K} \right\} \\
-    &\ge \exp\left\{ -1 - \log{K} - \frac{2 C \sqrt{K}}{t} \right\} \\
-    &= \frac{1}{e K} \cdot \exp\left\{ - \frac{2 C \sqrt{K}}{t} \right\} \\
-    &\ge \frac{1}{e K} \cdot \left( 1 - \frac{2 C \sqrt{K}}{t} \right).
+    &\ge \exp\left\{ \frac{\hat{\rvr}_{t-1}(i_{\min})}{\tau} - \frac{C \sqrt{K}}{\tau t} - \frac{c_{t-1}}{\tau} - \frac{\hat{\rvr}_{t-1}(i_{\max})}{\tau} - \frac{C \sqrt{K}}{\tau t} + \frac{c_{t-1}}{\tau} - \log{K} \right\} \\
+    &\ge \exp\left\{ - \frac{1}{\tau} - \log{K} - \frac{2 C \sqrt{K}}{\tau t} \right\} \\
+    &= \frac{1}{ K \cdot \exp\left\{ \frac{1}{\tau} \right\} } \cdot \exp\left\{ - \frac{2 C \sqrt{K}}{\tau t} \right\} \\
+    &\ge \frac{1}{K \cdot \exp\left\{ \frac{1}{\tau} \right\}} \cdot \left( 1 - \frac{2 C \sqrt{K}}{\tau t} \right).
 \end{split}
 \end{equation*}
 Using the choice of learning rate $\eta$ at step $t$,
 \begin{equation*}
 \begin{split}
     \eta \cdot \lambda_{\min}^{+}\left\{ \rmH_t \right\} &\ge \eta \cdot \min\limits_{i \in [K]}{\rvpi_t(i)} \\
-    &\ge \eta \cdot \frac{1}{e K} \cdot \left( 1 - \frac{2 C \sqrt{K}}{t} \right) \\
+    &\ge \eta \cdot \frac{1}{K \cdot \exp\left\{ \frac{1}{\tau} \right\}} \cdot \left( 1 - \frac{2 C \sqrt{K}}{\tau t} \right) \\
     &\ge \frac{1}{t+1} + \frac{1}{(t+1)(t+C)}.
 \end{split}
 \end{equation*}
 Let $c_{t} = c_{t-1}$. According to the update,
 \begin{equation*}
 \begin{split}
-    \rvo_{t+1} - \hat{\rvr}_t + c_{t} \rvone &= \rvo_{t} - \hat{\rvr}_{t-1} + c_{t-1} \rvone + \hat{\rvr}_{t-1} - \hat{\rvr}_t - \eta \cdot \rmH_t \left( \rvo_{t} - \hat{\rvr}_{t-1} + c_{t-1} \rvone \right) - \eta \cdot \rmH_t \left( \hat{\rvr}_{t-1} - \rvr_t \right).
+    \tau \rvo_{t+1} - \hat{\rvr}_t + c_{t} \rvone &= \tau \rvo_{t} - \hat{\rvr}_{t-1} + c_{t-1} \rvone + \hat{\rvr}_{t-1} - \hat{\rvr}_t - \eta \cdot \rmH_t \left( \tau \rvo_{t} - \hat{\rvr}_{t-1} + c_{t-1} \rvone \right) - \eta \cdot \rmH_t \left( \hat{\rvr}_{t-1} - \rvr_t \right).
 \end{split}
 \end{equation*}
-Denote $\rvdelta_{t} \triangleq \rvo_{t} - \hat{\rvr}_{t-1} + c_{t-1} \rvone$. Note that
+Denote $\rvdelta_{t} \triangleq \tau \rvo_{t} - \hat{\rvr}_{t-1} + c_{t-1} \rvone$. Note that
 \begin{equation*}
 \begin{split}
     \hat{\rvr}_{t-1} - \hat{\rvr}_t &= \frac{\rvr_{1:t-1}}{t-1} - \frac{\rvr_{1:t-1} + \rvr_t}{t} = \frac{\rvr_{1:t-1} - (t-1) \cdot \rvr_t }{t(t-1)} = \frac{1}{t} \cdot \left( \hat{\rvr}_{t-1} - \rvr_t \right).
@@ -116,13 +116,13 @@ By the triangle and H{\" o}lder's inequality, assuming $\rvdelta_t \not= b_t \rv
     &\le \left( 1 - \eta \cdot \lambda_{\min}^{+}\left\{ \rmH_t \right\} \right) \cdot \frac{C \sqrt{K}}{t} + \left( \frac{1}{t} - \eta \cdot \lambda_{\min}^{+}\left\{ \rmH_t \right\} \right) \cdot \sqrt{K} \\
     &= \frac{C \sqrt{K}}{t} + \frac{\sqrt{K}}{t} - \eta \cdot \lambda_{\min}^{+}\left\{ \rmH_t \right\} \cdot \left( \frac{C \sqrt{K}}{t} + \sqrt{K} \right) \\
     &\le \frac{C \sqrt{K}}{t} + \frac{\sqrt{K}}{t} - \left[ \frac{1}{t+1} + \frac{1}{(t+1)(t+C)} \right] \cdot \left( \frac{C \sqrt{K}}{t} + \sqrt{K} \right) \\
-    &= \frac{C \sqrt{K}}{t+1}.
+    &= \frac{C \sqrt{K}}{t+1},
 \end{split}
 \end{equation*}
-If either $\rvdelta_t = b_t \rvone$ or $\hat{\rvr}_{t-1} - \rvr_t = d_t \rvone$, for some $b_t, d_t \in \sR$, the result will be similar. If both $\rvdelta_t = b_t \rvone$ and $\hat{\rvr}_{t-1} - \rvr_t = d_t \rvone$, then
+where $\lambda_{\min}^{+}\left\{ \rmH_t \right\}$ refers to the smallest positive eigenvalue of $\rmH_t$. If either $\rvdelta_t = b_t \rvone$ or $\hat{\rvr}_{t-1} - \rvr_t = d_t \rvone$, for some $b_t, d_t \in \sR$, the result will be similar. If both $\rvdelta_t = b_t \rvone$ and $\hat{\rvr}_{t-1} - \rvr_t = d_t \rvone$, then
 \begin{equation*}
 \begin{split}
-    \rvo_t - \rvr_t &= \rvo_{t} - \hat{\rvr}_{t-1} + c_{t-1} \rvone + \hat{\rvr}_{t-1} - \rvr_t - c_{t-1} \rvone \\
+    \tau \rvo_t - \rvr_t &= \tau \rvo_{t} - \hat{\rvr}_{t-1} + c_{t-1} \rvone + \hat{\rvr}_{t-1} - \rvr_t - c_{t-1} \rvone \\
     &= (b_t + d_t - c_{t-1}) \rvone,
 \end{split}
 \end{equation*}
