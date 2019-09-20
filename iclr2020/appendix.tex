@@ -87,10 +87,10 @@ Using the choice of learning rate $\eta$ at step $t$,
 \begin{split}
     \eta \cdot \lambda_{\min}^{+}\left\{ \rmH_t \right\} &\ge \eta \cdot \min\limits_{i \in [K]}{\rvpi_t(i)} \\
     &\ge \eta \cdot \frac{1}{K \cdot \exp\left\{ \frac{1}{\tau} \right\}} \cdot \left( 1 - \frac{2 C \sqrt{K}}{\tau t} \right) \\
-    &\ge \frac{1}{t+1} + \frac{1}{(t+1)(t+C)}.
+    &\ge \frac{1}{t+1} + \frac{1}{(t+1)(t+C)},
 \end{split}
 \end{equation*}
-Let $c_{t} = c_{t-1}$. According to the update,
+where $\lambda_{\min}^{+}\left\{ \rmH_t \right\}$ refers to the smallest positive eigenvalue of $\rmH_t$. Let $c_{t} = c_{t-1}$. By the update,
 \begin{equation*}
 \begin{split}
     \tau \rvo_{t+1} - \hat{\rvr}_t + c_{t} \rvone &= \tau \rvo_{t} - \hat{\rvr}_{t-1} + c_{t-1} \rvone + \hat{\rvr}_{t-1} - \hat{\rvr}_t - \eta \cdot \rmH_t \left( \tau \rvo_{t} - \hat{\rvr}_{t-1} + c_{t-1} \rvone \right) - \eta \cdot \rmH_t \left( \hat{\rvr}_{t-1} - \rvr_t \right).
@@ -119,7 +119,7 @@ By the triangle and H{\" o}lder's inequality, assuming $\rvdelta_t \not= b_t \rv
     &= \frac{C \sqrt{K}}{t+1},
 \end{split}
 \end{equation*}
-where $\lambda_{\min}^{+}\left\{ \rmH_t \right\}$ refers to the smallest positive eigenvalue of $\rmH_t$. If either $\rvdelta_t = b_t \rvone$ or $\hat{\rvr}_{t-1} - \rvr_t = d_t \rvone$, for some $b_t, d_t \in \sR$, the result will be similar. If both $\rvdelta_t = b_t \rvone$ and $\hat{\rvr}_{t-1} - \rvr_t = d_t \rvone$, then
+If either $\rvdelta_t = b_t \rvone$ or $\hat{\rvr}_{t-1} - \rvr_t = d_t \rvone$, for some $b_t, d_t \in \sR$, the result will be similar. If both $\rvdelta_t = b_t \rvone$ and $\hat{\rvr}_{t-1} - \rvr_t = d_t \rvone$, then
 \begin{equation*}
 \begin{split}
     \tau \rvo_t - \rvr_t &= \tau \rvo_{t} - \hat{\rvr}_{t-1} + c_{t-1} \rvone + \hat{\rvr}_{t-1} - \rvr_t - c_{t-1} \rvone \\

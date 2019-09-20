@@ -11,7 +11,7 @@ It is direct to check this estimator is unbiased
 \begin{equation*}
     \expectation\limits_{A_t \sim \rvpi_t}{ \rvone_{ \left\{ \frac{\rvr_t(A_t) }{\rvpi_t(A_t)}  \right\} } } = \sum\limits_{ i \in [K] }{ \rvpi_t(i) \cdot \rvone_{ \left\{ \frac{\rvr_t(i) }{\rvpi_t(i)}  \right\} }  } = \sum\limits_{i \in [K] }{ \rvone_{ \left\{ \rvr_t(i)  \right\} } } = \rvr_t.
 \end{equation*}
-We first show that when the importance sampling estimator is used, \cref{alg:erpg_ment_reinforce} has exactly the same update form as the classic MENT/REINFORCE algorithm.
+We first show that when using importance sampling estimator, \cref{alg:erpg_ment_reinforce} has exactly the same update form as the classic MENT/REINFORCE algorithm.
 
 \begin{lem}
 \label{lem:equivalence_ment_reinforce}
@@ -65,7 +65,7 @@ The corresponding logit update is,
 Let $\rvo_t \triangleq \rmA \rmD_t \rmW_t \rvs$, where $\rvs \in \sR^d$ is the input vector, with $\| \rvs \| = 1$. $\rmW_t \in \sR^{m \times d}$ is the weight matrix of the first hidden layer. $\rmD_t \in \sR^{m \times m}$ is the ReLU diagonal matrix, with $\sI\left\{ \rmW_t \rvs > \rvzero \right\}$ as its diagonal. $\rmA \in \left\{ -1, +1 \right\}^{K \times m}$ is the weight matrix of the second hidden layer. $\rmA$ will be fixed after initialization. The parameter update in \cref{alg:erpg_ment_reinforce} becomes
 \begin{equation*}
 \begin{split}
-    \rmW_{t+1} = \rmW_{t} + \eta \rmD_t \rmA^\top \rmH_t ( \rvr_t - \tau \rvo_t)
+    \rmW_{t+1} = \rmW_{t} + \eta \rmD_t \rmA^\top \rmH_t ( \rvr_t - \tau \rvo_t) \rvs^\top
 \end{split}
 \end{equation*}
 The corresponding logit update is,
