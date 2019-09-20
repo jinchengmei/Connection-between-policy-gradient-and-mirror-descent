@@ -1,0 +1,179 @@
+\section{Appendix}
+
+\begin{lem}
+
+\end{lem}
+\begin{proof}
+First, we show that the update using $\nabla(\rvo_t)$ is actually policy gradient,
+\begin{equation*}
+\begin{split}
+    \nabla(\rvo_t) &= \frac{d \left\{ \rvpi(\rvo_t)^\top \rvr_t - \rvpi(\rvo_t)^\top \log{\rvpi(\rvo_t)} \right\} }{d \rvo_t} \\
+    &= \left( \frac{d \rvpi_t}{d \rvo_t} \right)^\top \left( \rvr_t - \rvone - \log{\rvpi_t} \right) \\
+    &= \left( \frac{d \rvpi_t}{d \rvo_t} \right)^\top \left( \rvr_t - \log{\rvpi_t} \right) \\
+    &= \left( \frac{d \rvpi_t}{d \rvo_t} \right)^\top \left[ \sum\limits_{i \in [K]}{ \rvpi_t(i) \cdot \rvone_{ \left\{ \frac{\rvr_t(i) - \log{\rvpi_t(i)} }{\rvpi_t(i)} \right\} } } \right]  \\
+    &= \sum\limits_{i \in [K]}{ \rvpi_t(i) \cdot \left[ \left( \frac{d \rvpi_t}{d \rvo_t} \right)^\top \rvone_{ \left\{ \frac{\rvr_t(i) - \log{\rvpi_t(i)} }{\rvpi_t(i)} \right\} } \right] } \\
+    &= \sum\limits_{i \in [K]}{ \rvpi_t(i) \cdot \left[ \frac{\rvr_t(i) - \log{\rvpi_t(i)} }{\rvpi_t(i)} \cdot \frac{d \rvpi_t(i)}{d \rvo_t}  \right] } \\
+    &= \expectation\limits_{i \sim \rvpi_t}{ \left( \rvr_t(i) - \log{\rvpi_t(i)} \right) \cdot \frac{d \log{\rvpi_t(i)} }{d \rvo_t} }.
+\end{split}
+\end{equation*}
+\end{proof}
+
+\begin{lem}
+Let $\rvr_1, \rvr_2, \dots, \rvr_t \in \left[ 0, 1  \right]^K$. Denote $\rvr_{1:t} \triangleq \sum\limits_{i=1}^{t}{\rvr_i}$, and $\hat{\rvr}_t \triangleq \frac{\rvr_{1:t}}{t}$. Let $\rvo \in \sR^K$ be any logit vector, and $\rvpi(\rvo) \triangleq \softmax(\rvo)$ be the softmax policy of $\rvo$. For any policy $\rvpi$, define $\rmH\left( \rvpi \right) \triangleq \Delta \left( \rvpi \right) - \rvpi \rvpi^\top$, where $\Delta \left( \rvpi \right) \in \sR^{K \times K}$ is a diagonal matrix, with $\rvpi$ as its diagonal. Define the entropy regularized policy gradient with respect to logit at step $t$,
+\begin{equation*}
+\begin{split}
+    \nabla(\rvo_t) &\triangleq \frac{d \left\{ \rvpi(\rvo_t)^\top \rvr_t - \rvpi(\rvo_t)^\top \log{\rvpi(\rvo_t)} \right\} }{d \rvo_t} \\
+    &= \left[ \Delta \left( \rvpi(\rvo_t) \right) - \rvpi(\rvo_t) \rvpi(\rvo_t)^\top \right] \left( \rvr_t - \rvo_t \right).
+\end{split}
+\end{equation*}
+Denote $\rmH_t \triangleq \rmH(\rvpi(\rvo_t))$.
+Consider the entropy regularized policy gradient update,
+\begin{equation*}
+\begin{split}
+    \rvo_{t+1} &= \rvo_t + \eta \cdot \nabla(\rvo_t) \\
+    &= \rvo_t + \eta \cdot \rmH_t \left( \rvr_t - \rvo_t \right).
+\end{split}
+\end{equation*}
+If the learning rate $\eta$ at iteration $t$ satisfies
+\begin{equation*}
+\begin{split}
+    \eta \ge \frac{ \frac{1}{t+1} + \frac{1}{(t+1)(t+C)} }{ \frac{1}{e K} \cdot \left( 1 - \frac{2 C \sqrt{K}}{t+1} \right)  } = e K \cdot \left( 1 + \frac{1}{t+C} \right) \cdot \frac{1}{t+1-2C\sqrt{K}} = O\left( \frac{1}{t} \right),
+\end{split}
+\end{equation*}
+then there exists a scalar $c_t \in \sR$, such that
+\begin{equation*}
+    \left\| \rvo_{t+1} - \hat{\rvr}_{t} + c_t \rvone \right\| \le \frac{C \sqrt{K}}{t+1}, \quad \forall t \ge 0.
+\end{equation*}
+\end{lem}
+\begin{proof}
+We use induction on $t$. For $t=0$, and $c_0 = 0$,
+\begin{equation*}
+\begin{split}
+    \left\| \rvo_{1} - \hat{\rvr}_0 + c_0 \rvone \right\| = \left\| \rvzero \right\| = 0 \le C \sqrt{K}.
+\end{split}
+\end{equation*}
+Assume $\left\| \rvo_{t} - \hat{\rvr}_{t-1} + c_{t-1} \rvone \right\| \le \frac{C \sqrt{K}}{t}$ for some $t \ge 1$. There  are two different cases of the update.
+
+\textbf{First case:} $\rvr_t - \rvo_t = a_t \rvone$, where $a_t \in \sR$. This means $\rvo_{t+1} = \rvo_{t}$. Let $c_t \triangleq \frac{(t-1)c_{t-1}}{t} +  \frac{a_t}{t}$, we have
+\begin{equation*}
+\begin{split}
+    \left\| \rvo_{t+1} - \hat{\rvr}_t + c_t \rvone \right\| &= \left\| \rvo_{t} - \hat{\rvr}_t + \frac{(t-1)c_{t-1}}{t} \rvone + \frac{a_t}{t} \rvone \right\| \\
+    &= \left\| \rvo_{t} - \frac{\rvr_{1:t-1} + \rvr_t}{t-1} \cdot \frac{t-1}{t} + \frac{(t-1)c_{t-1}}{t} \rvone + \frac{a_t}{t} \rvone \right\| \\
+    &= \left\| \rvo_{t} - \hat{\rvr}_{t-1} + \frac{\hat{\rvr}_{t-1}}{t} - \frac{\rvo_t + a_t \rvone}{t} + \frac{(t-1)c_{t-1}}{t} \rvone + \frac{a_t}{t} \rvone \right\| \\
+    &= \left\| \frac{t-1}{t} \cdot \left( \rvo_{t} - \hat{\rvr}_{t-1} + c_{t-1} \rvone \right) \right\| \\
+    &\le \frac{t-1}{t} \cdot \frac{C \sqrt{K}}{t} \\
+    &\le \frac{C \sqrt{K}}{t+1}.
+\end{split}
+\end{equation*}
+
+\textbf{Second case:} $\rvr_t - \rvo_t \not= a_t \rvone$, for any $a_t \in \sR$. Then $\rvo_{t+1} \not= \rvo_t$. By the inductive hypothesis,
+\begin{equation*}
+\begin{split}
+    \left| \rvo_{t}(i) - \hat{\rvr}_{t-1}(i) + c_{t-1} \right| \le \left\| \rvo_{t} - \hat{\rvr}_{t-1} + c_{t-1} \rvone \right\| \le \frac{C \sqrt{K}}{t}, \quad \forall i \in [K].
+\end{split}
+\end{equation*}
+Denote $i_{\min} \triangleq \argmin\limits_{i \in [K]}{\rvo_t(i)} $, $i_{\max} \triangleq \argmax\limits_{i \in [K]}{\rvo_t(i)} $, and $\gF(\rvo_t) \triangleq \log{\sum\limits_{i = 1}^K{\exp\left\{ \rvo_t(i) \right\}} } \le \rvo_t(i_{\max}) + \log{K}$. The smallest probability of $\rvpi_t$ can be lower bounded as
+\begin{equation*}
+\begin{split}
+    \min\limits_{i \in [K]}{\rvpi_t(i)} &= \min\limits_{i \in [K]}{ \exp\left\{ \rvo_t(i) - \gF(\rvo_t) \right\} } \\
+    &= \exp\left\{ \min\limits_{i \in [K]}{\rvo_t(i)} - \gF(\rvo_t) \right\} \\
+    &\ge \exp\left\{ \rvo_t(i_{\min}) - \rvo_t(i_{\max}) - \log{K} \right\} \\
+    &\ge \exp\left\{ \hat{\rvr}_{t-1}(i_{\min}) - \frac{C \sqrt{K}}{t} - \hat{\rvr}_{t-1}(i_{\max}) - \frac{C \sqrt{K}}{t} - \log{K} \right\} \\
+    &\ge \exp\left\{ -1 - \log{K} - \frac{2 C \sqrt{K}}{t} \right\} \\
+    &= \frac{1}{e K} \cdot \exp\left\{ - \frac{2 C \sqrt{K}}{t} \right\} \\
+    &\ge \frac{1}{e K} \cdot \left( 1 - \frac{2 C \sqrt{K}}{t} \right).
+\end{split}
+\end{equation*}
+Using the choice of learning rate $\eta$ at step $t$,
+\begin{equation*}
+\begin{split}
+    \eta \cdot \lambda_{\min}^{+}\left\{ \rmH_t \right\} &\ge \eta \cdot \min\limits_{i \in [K]}{\rvpi_t(i)} \\
+    &\ge \eta \cdot \frac{1}{e K} \cdot \left( 1 - \frac{2 C \sqrt{K}}{t} \right) \\
+    &\ge \frac{1}{t+1} + \frac{1}{(t+1)(t+C)}.
+\end{split}
+\end{equation*}
+Let $c_{t} = c_{t-1}$. According to the update,
+\begin{equation*}
+\begin{split}
+    \rvo_{t+1} - \hat{\rvr}_t + c_{t} \rvone &= \rvo_{t} - \hat{\rvr}_{t-1} + c_{t-1} \rvone + \hat{\rvr}_{t-1} - \hat{\rvr}_t - \eta \cdot \rmH_t \left( \rvo_{t} - \hat{\rvr}_{t-1} + c_{t-1} \rvone \right) - \eta \cdot \rmH_t \left( \hat{\rvr}_{t-1} - \rvr_t \right).
+\end{split}
+\end{equation*}
+Denote $\rvdelta_{t} \triangleq \rvo_{t} - \hat{\rvr}_{t-1} + c_{t-1} \rvone$. Note that
+\begin{equation*}
+\begin{split}
+    \hat{\rvr}_{t-1} - \hat{\rvr}_t &= \frac{\rvr_{1:t-1}}{t-1} - \frac{\rvr_{1:t-1} + \rvr_t}{t} = \frac{\rvr_{1:t-1} - (t-1) \cdot \rvr_t }{t(t-1)} = \frac{1}{t} \cdot \left( \hat{\rvr}_{t-1} - \rvr_t \right).
+\end{split}
+\end{equation*}
+We have the following iterative relation,
+\begin{equation*}
+\begin{split}
+    \rvdelta_{t+1} = \left[ \rmI - \eta \cdot \rmH_t \right] \rvdelta_t + \left[ \frac{1}{t} \cdot \rmI - \eta \cdot \rmH_t \right] \left( \hat{\rvr}_{t-1} - \rvr_t \right).
+\end{split}
+\end{equation*}
+By the triangle and H{\" o}lder's inequality, assuming $\rvdelta_t \not= b_t \rvone$ and $\hat{\rvr}_{t-1} - \rvr_t \not= d_t \rvone$ for any $b_t, d_t \in \sR$,
+\begin{equation*}
+\begin{split}
+    \left\| \rvdelta_{t+1} \right\| &\le \lambda_{\max}\left\{ \rmI - \eta \cdot \rmH_t \right\} \cdot \left\| \rvdelta_{t} \right\| + \lambda_{\max}\left\{ \frac{1}{t} \cdot \rmI - \eta \cdot \rmH_t \right\} \cdot \left\| \hat{\rvr}_{t-1} - \rvr_t \right\| \\
+    &\le \left( 1 - \eta \cdot \lambda_{\min}^{+}\left\{ \rmH_t \right\} \right) \cdot \left\| \rvdelta_{t} \right\| + \left( \frac{1}{t} - \eta \cdot \lambda_{\min}^{+}\left\{ \rmH_t \right\} \right) \cdot \sqrt{K} \\
+    &\le \left( 1 - \eta \cdot \lambda_{\min}^{+}\left\{ \rmH_t \right\} \right) \cdot \frac{C \sqrt{K}}{t} + \left( \frac{1}{t} - \eta \cdot \lambda_{\min}^{+}\left\{ \rmH_t \right\} \right) \cdot \sqrt{K} \\
+    &= \frac{C \sqrt{K}}{t} + \frac{\sqrt{K}}{t} - \eta \cdot \lambda_{\min}^{+}\left\{ \rmH_t \right\} \cdot \left( \frac{C \sqrt{K}}{t} + \sqrt{K} \right) \\
+    &\le \frac{C \sqrt{K}}{t} + \frac{\sqrt{K}}{t} - \left[ \frac{1}{t+1} + \frac{1}{(t+1)(t+C)} \right] \cdot \left( \frac{C \sqrt{K}}{t} + \sqrt{K} \right) \\
+    &= \frac{C \sqrt{K}}{t+1}.
+\end{split}
+\end{equation*}
+If either $\rvdelta_t = b_t \rvone$ or $\hat{\rvr}_{t-1} - \rvr_t = d_t \rvone$, for some $b_t, d_t \in \sR$, the result will be similar. If both $\rvdelta_t = b_t \rvone$ and $\hat{\rvr}_{t-1} - \rvr_t = d_t \rvone$, then
+\begin{equation*}
+\begin{split}
+    \rvo_t - \rvr_t &= \rvo_{t} - \hat{\rvr}_{t-1} + c_{t-1} \rvone + \hat{\rvr}_{t-1} - \rvr_t - c_{t-1} \rvone \\
+    &= (b_t + d_t - c_{t-1}) \rvone,
+\end{split}
+\end{equation*}
+which reduces to the first case.
+\end{proof}
+
+\begin{lem}
+Given any $\rvpi \in \Delta$, define $\rmH\left( \rvpi \right) \triangleq \Delta \left( \rvpi \right) - \rvpi \rvpi^\top$. Sorting $\rvpi$ in ascending order,
+\begin{equation*}
+\begin{split}
+    &\quad \rvpi(1) = \rvpi(2) = \cdots = \rvpi(|\gS_1|) \\
+    &< \rvpi(|\gS_1|+1) = \rvpi(|\gS_1|+2) = \cdots = \rvpi(|\gS_1| + |\gS_2|) \\
+    &\ \ \vdots \\
+    &< \rvpi(K - |\gS_k| + 1) = \rvpi(K - |\gS_k| + 2) = \cdots = \rvpi(K),
+\end{split}
+\end{equation*}
+where $\gS_i \triangleq \left\{ \rvpi(|\gS_{<i}| + 1), \rvpi(|\gS_{<i}| + 2), \dots,  \rvpi(|\gS_{<i}| + |\gS_i|) \right\}$, $\forall 1 \le i \le k$, and $|\gS_{<i}| \triangleq \sum\limits_{j < i}{|\gS_j|}$ satisfy \begin{equation*}
+\begin{split}
+    \bigcup_{i=1}^{k}{\gS_i} &= \left\{ \rvpi(1), \rvpi(2), \dots, \rvpi(K) \right\} \\
+    \gS_i \cap \gS_j &= \emptyset, \quad \forall i \not= j.
+\end{split}    
+\end{equation*}
+Then the eigenvalues of $\rmH\left( \rvpi \right)$ are
+\begin{equation*}
+\begin{split}
+    \lambda_{1} &= 0 \\
+    \lambda_{2} = \lambda_{3} = \cdots = \lambda_{|\gS_1|} &= \rvpi(|\gS_1|) \\
+    \lambda_{|\gS_1| + 1 } &\in \left( \rvpi(|\gS_1|), \rvpi(|\gS_2|) \right) \\
+    \lambda_{|\gS_1| + 2} = \lambda_{|\gS_1| + 3} = \cdots = \lambda_{|\gS_1| + |\gS_2|} &= \rvpi(|\gS_2|) \\
+    \lambda_{|\gS_1| + |\gS_2| + 1 } &\in \left( \rvpi(|\gS_2|), \rvpi(|\gS_3|) \right) \\
+    &\ \ \vdots \\
+    \lambda_{K - |\gS_k| +1} &\in \left( \rvpi(K-1), \rvpi(K) \right) \\
+    \lambda_{K - |\gS_k| + 2} = \lambda_{K - |\gS_k| + 3} = \cdots = \lambda_{K} &= \rvpi(K).
+\end{split}
+\end{equation*}
+And for any eigenvalue $\lambda$ of $\rmH(\rvpi)$ such that $\lambda \not= \rvpi(i)$, $\forall i \in [K]$, we have
+\begin{equation*}
+    \sum\limits_{i=1}^{K}{\frac{\rvpi(i)^2}{\rvpi(i) - \lambda}} = 1.
+\end{equation*}
+\end{lem}
+\begin{proof}
+Suppose $\lambda$ is an eigenvalue of $\rmH(\rvpi)$ and $\rvv$ is the corresponding eigenvector, i.e.,
+\begin{equation*}
+    \rmH(\rvpi) \rvv = \left[ \Delta(\rvpi) - \rvpi\rvpi^\top \right] \rvv = \lambda \rvv.
+\end{equation*}
+It is easy to check that $\rvv = \rvone$ is the eigenvector of $\lambda_0 = 0$. Next, assuming $\lambda \not= 0$, we have
+\begin{equation*}
+    \rvpi(i) \left( \rvv(i) - \rvpi^\top \rvv \right) = \lambda \rvv(i), \quad \forall i \in [K].
+\end{equation*}
+Note if $\rvpi^\top \rvv = 0$, we have $\rvpi(i) \rvv(i) = \lambda \rvv(i)$, $\forall i \in [K]$. Since $\rvv \not= \rvzero$, assume $\rvv(j) \not= 0$, then we have $\rvpi(j) = \lambda$. Suppose $\rvpi(j) \in \gS$
+\end{proof}
+

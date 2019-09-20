@@ -1,6 +1,7 @@
 %%%%% NEW MATH DEFINITIONS %%%%%
 
 \usepackage{amsmath,amsfonts,bm}
+\usepackage{amssymb,amsthm}
 
 % Mark sections of captions for referring to divisions of figures
 \newcommand{\figleft}{{\em (Left)}}
@@ -376,6 +377,7 @@
 \def\sD{{\mathbb{D}}}
 % Don't use a set called E, because this would be the same as our symbol
 % for expectation.
+\def\sE{{\mathbb{E}}}
 \def\sF{{\mathbb{F}}}
 \def\sG{{\mathbb{G}}}
 \def\sH{{\mathbb{H}}}
@@ -506,3 +508,18 @@
 \DeclareMathOperator{\sign}{sign}
 \DeclareMathOperator{\Tr}{Tr}
 \let\ab\allowbreak
+
+\newtheorem{thm}{Theorem}
+\newtheorem{lem}{Lemma}
+\newtheorem{defi}{Definition}
+\newtheorem{prop}{Proposition}
+\newtheorem{remk}{Remark}
+
+\def\rvpi{{\boldsymbol{\pi}}}
+\def\rvdelta{{\boldsymbol{\delta}}}
+\def\rvtheta{{\boldsymbol{\theta}}}
+
+\def\rvone{{\mathbf{1}}}
+\def\rvzero{{\mathbf{0}}}
+
+\DeclareMathOperator*{\expectation}{\sE}
