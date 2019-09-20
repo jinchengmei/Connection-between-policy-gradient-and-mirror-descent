@@ -44,3 +44,33 @@ for some constant $C > 0$, then there exists a scalar $c_{t-1} \in \sR$, such th
 \end{thm}
 
 Policy gradient method works in an online fashion, i.e., at step $t$, it just collects on policy samples to estimate learning signal at current step $t$.  \cref{thm:logit_mean_approximation} indicates that with entropy regularization, it actually approximates the average of all the histories up to step $t$ without explicitly memorizing them or maintaining any statistics. And the approximation is good, with error decaying as $O\left( \frac{1}{t} \right)$. First, we can take advantage of this approximation by converting the logit into policy, and the resultant algorithm will enjoy provable guarantees. This is because the approximation is optimal, as shown in next section. Second, unlike traditional bandit algorithms, the policy gradient is ``tabular free'', i.e., it does not utilize any tabular statistics, such as empirical mean and visit count. Therefore it can be scaled up in practice.
+
+\subsection{Linear Function Approximation}
+
+Let $\rvo_t \triangleq \rmX \rvtheta_t$, where $\rmX \in \sR^{K \times m}$ is a fixed feature matrix, and $\rvtheta \in \sR^m$ is the parameter vector, with $m < K$. The parameter update in \cref{alg:erpg_ment_reinforce} becomes
+\begin{equation*}
+\begin{split}
+    \rvtheta_{t+1} = \rvtheta_{t} + \eta \rmX^\top \rmH_t (\rvr_t - \tau \rvo_t).
+\end{split}
+\end{equation*}
+The corresponding logit update is,
+\begin{equation*}
+\begin{split}
+    \rvo_{t+1} = \rvo_{t} + \eta \rmX \rmX^\top \rmH_t (\rvr_t - \tau \rvo_t).
+\end{split}
+\end{equation*}
+
+\subsection{Neural Network Function Approximation}
+
+Let $\rvo_t \triangleq \rmA \rmD_t \rmW_t \rvs$, where $\rvs \in \sR^d$ is the input vector, with $\| \rvs \| = 1$. $\rmW_t \in \sR^{m \times d}$ is the weight matrix of the first hidden layer. $\rmD_t \in \sR^{m \times m}$ is the ReLU diagonal matrix, with $\sI\left\{ \rmW_t \rvs > \rvzero \right\}$ as its diagonal. $\rmA \in \left\{ -1, +1 \right\}^{K \times m}$ is the weight matrix of the second hidden layer. $\rmA$ will be fixed after initialization. The parameter update in \cref{alg:erpg_ment_reinforce} becomes
+\begin{equation*}
+\begin{split}
+    \rmW_{t+1} = \rmW_{t} + \eta \rmD_t \rmA^\top \rmH_t ( \rvr_t - \tau \rvo_t)
+\end{split}
+\end{equation*}
+The corresponding logit update is,
+\begin{equation*}
+\begin{split}
+    \rvo_{t+1} &= \rmA \rmD_{t+1} \rmW_{t} \rvs + \eta \rmA \rmD_{t+1} \rmD_{t} \rmA^\top \rmH_t (\rvr_t - \tau \rvo_t).
+\end{split}
+\end{equation*}

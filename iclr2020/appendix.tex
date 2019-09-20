@@ -175,3 +175,9 @@ It is easy to check that $\rvv = \rvone$ is the eigenvector of $\lambda_0 = 0$. 
 Note if $\rvpi^\top \rvv = 0$, we have $\rvpi(i) \rvv(i) = \lambda \rvv(i)$, $\forall i \in [K]$. Since $\rvv \not= \rvzero$, assume $\rvv(j) \not= 0$, then we have $\rvpi(j) = \lambda$. Suppose $\rvpi(j) \in \gS$
 \end{proof}
 
+\begin{lem}
+Let $\rvpi_1 \triangleq \softmax(\rvo_1)$ and $\rvpi_2 \triangleq \softmax(\rvo_2)$. Then
+\begin{equation*}
+    \left\| \rvpi_1 - \rvpi_2 \right\|_\infty \le  2 \left\| \rvo_1 - \rvo_2 \right\|_\infty.
+\end{equation*}
+\end{lem}

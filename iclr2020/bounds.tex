@@ -1,0 +1,29 @@
+\section{Bounds}
+
+\begin{lem}
+Let $\rvpi_1 \triangleq \softmax(\rvo_1)$ and $\rvpi_2 \triangleq \softmax(\rvo_2)$. Then
+\begin{equation*}
+    \left\| \rvpi_1 - \rvpi_2 \right\|_\infty \le  2 \left\| \rvo_1 - \rvo_2 \right\|_\infty.
+\end{equation*}
+\end{lem}
+
+\begin{thm}
+Let $\rvo_t$ be the logit in \cref{alg:erpg_ment_reinforce}. Define $\bar{\rvpi}_t \triangleq \softmax(\tau \sqrt{t-1} \cdot \rvo_t)$, $\forall t \ge 2$.
+\end{thm}
+\begin{proof}
+According to \cref{thm:logit_mean_approximation}, there exists $c_{t-1} \in \sR$, such that
+\begin{equation*}
+\begin{split}
+    \left\| \tau \sqrt{t-1} \cdot \rvo_t - \sqrt{t-1} \cdot \hat{\rvr}_{t-1} + c_{t-1} \sqrt{t-1} \cdot \rvone \right\|_\infty &= \sqrt{t-1} \cdot \left\| \tau \rvo_t - \hat{\rvr}_{t-1} + c_{t-1} \rvone \right\|_\infty \\
+    &\le \sqrt{t-1} \cdot \left\| \tau \rvo_t - \hat{\rvr}_{t-1} + c_{t-1} \rvone \right\| \\
+    &\le \frac{\sqrt{t-1} \cdot C \sqrt{K}}{t} \le \frac{C \sqrt{K}}{\sqrt{t}},
+\end{split}
+\end{equation*}
+for some constant $C > 0$ and $\forall t \ge 2$. Define $\rvpi_t^{\text{MD}} = \softmax(\sqrt{t-1} \cdot \hat{\rvr}_{t-1}) = \softmax(\sqrt{t-1} \cdot \hat{\rvr}_{t-1} - c_{t-1} \sqrt{t-1} \cdot \rvone)$, since softmax transform is invariant to additive constant vector. We have,
+\begin{equation*}
+\begin{split}
+    \sum\limits_{t=1}^{T}{ \left( \rvpi^* - \bar{\rvpi}_t \right)^\top \rvr_t} &= \sum\limits_{t=1}^{T}{ \left( \rvpi^* - \rvpi_{t}^{\text{MD}} \right)^\top \rvr_t} + \sum\limits_{t=1}^{T}{ \left( \rvpi_{t}^{\text{MD}} - \bar{\rvpi}_t \right)^\top \rvr_t} \\
+    &\le O(\sqrt{T}) + \sum\limits_{t=1}^{T}{ O\left( \frac{1}{\sqrt{t}} \right) } = O(\sqrt{T}). \qedhere
+\end{split}
+\end{equation*}
+\end{proof}
