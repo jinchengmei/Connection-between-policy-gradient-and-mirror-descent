@@ -60,6 +60,23 @@ The corresponding logit update is,
 \end{split}
 \end{equation*}
 
+If we can upper bound $\rmX^\top\left( \rvo_{t} - \hat{\rvr}_{t-1} \right)$, then
+\begin{equation*}
+\begin{split}
+    \rmX \left(\rmX^\top \rmX \right)^{-1} \rmX^\top\left( \rvo_{t} - \hat{\rvr}_{t-1} \right) &= \rmX \left(\rmX^\top \rmX \right)^{-1} \rmX^\top\left( \rmX \rvtheta_{t} - \hat{\rvr}_{t-1} \right) \\
+    &= \rvo_t - \rmX \left(\rmX^\top \rmX \right)^{-1} \rmX^\top \hat{\rvr}_{t-1}
+\end{split}
+\end{equation*}
+can also be upper bounded, where $\left(\rmX^\top \rmX \right)^{-1} \rmX^\top \hat{\rvr}_{t-1}$ is the least square solution of $\argmin_{\rvtheta}{  \left\| \rmX \rvtheta - \hat{\rvr}_{t-1} \right\| }$.
+\begin{equation*}
+\begin{split}
+    \rmX^\top\left( \rvo_{t+1} - \hat{\rvr}_{t} \right) &= \rmX^\top\left( \rvo_{t} - \hat{\rvr}_{t-1} \right) + \rmX^\top\left( \hat{\rvr}_{t-1} - \hat{\rvr}_{t} \right) \\
+    &\quad - \eta \rmX^\top \rmX \rmX^\top \rmH_{t} \left( \rvo_{t} - \hat{\rvr}_{t-1} \right) - \eta \rmX^\top \rmX \rmX^\top \rmH_{t} \left( \hat{\rvr}_{t-1} - \rvr_t \right) \\
+    &= \rmX^\top\left( \rvo_{t} - \hat{\rvr}_{t-1} \right) + \frac{1}{t} \cdot \rmX^\top\left( \hat{\rvr}_{t-1} - \rvr_{t} \right) \\
+    &\quad - \eta \rmX^\top \rmX \rmX^\top \rmH_{t} \left( \rvo_{t} - \hat{\rvr}_{t-1} \right) - \eta \rmX^\top \rmX \rmX^\top \rmH_{t} \left( \hat{\rvr}_{t-1} - \rvr_t \right).
+\end{split}
+\end{equation*}
+
 \subsection{Neural Network Function Approximation}
 
 Let $\rvo_t \triangleq \rmA \rmD_t \rmW_t \rvs$, where $\rvs \in \sR^d$ is the input vector, with $\| \rvs \| = 1$. $\rmW_t \in \sR^{m \times d}$ is the weight matrix of the first hidden layer. $\rmD_t \in \sR^{m \times m}$ is the ReLU diagonal matrix, with $\sI\left\{ \rmW_t \rvs > \rvzero \right\}$ as its diagonal. $\rmA \in \left\{ -1, +1 \right\}^{K \times m}$ is the weight matrix of the second hidden layer. $\rmA$ will be fixed after initialization. The parameter update in \cref{alg:erpg_ment_reinforce} becomes
@@ -71,6 +88,7 @@ Let $\rvo_t \triangleq \rmA \rmD_t \rmW_t \rvs$, where $\rvs \in \sR^d$ is the i
 The corresponding logit update is,
 \begin{equation*}
 \begin{split}
-    \rvo_{t+1} &= \rmA \rmD_{t+1} \rmW_{t} \rvs + \eta \rmA \rmD_{t+1} \rmD_{t} \rmA^\top \rmH_t (\rvr_t - \tau \rvo_t).
+    \rvo_{t+1} &= \rmA \rmD_{t+1} \rmW_{t} \rvs + \eta \rmA \rmD_{t+1} \rmD_{t} \rmA^\top \rmH_t (\rvr_t - \tau \rvo_t) \\
+    &= \rvo_t + \eta \rmA \rmD_{t+1} \rmD_{t} \rmA^\top \rmH_t (\rvr_t - \tau \rvo_t) + \rmA \left( \rmD_{t+1} - \rmD_{t} \right) \rmW_{t} \rvs
 \end{split}
 \end{equation*}
