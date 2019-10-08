@@ -21,7 +21,7 @@ Let $\rvx^\prime = \rvx_{t+1}$, $\rvx = \rvx_{t}$, and using $\eta = 1/L$,
 \begin{split}
     f_t\left(\rvx_{t+1}\right) &\le f_t\left(\rvx_{t}\right) + \left\langle \nabla f_t\left(\rvx_t\right) , - \eta \nabla f_t\left(\rvx_t\right) \right\rangle +  \frac{L \eta^2}{2} \left\| \nabla f_t\left(\rvx_t\right) \right\|^2 \\
     &= f_t\left(\rvx_{t}\right) - \frac{1}{2 L} \left\| \nabla f_t\left(\rvx_t\right) \right\|^2 \\
-    &\le f_t\left(\rvx_{t}\right) - \frac{1}{2 L} \left[ f_t\left(\rvx_t\right) - f_t\left(\rvx_t^*\right) \right]^2,
+    &\le f_t\left(\rvx_{t}\right) - \frac{G^2}{2 L} \left[ f_t\left(\rvx_t\right) - f_t\left(\rvx_t^*\right) \right]^2,
 \end{split}
 \end{equation}
 where the last inequality is according to \cref{asmp:gradient_dominant}. Denote $\delta_t \coloneqq f_t\left(\rvx_t\right) - f_t\left( \rvx_t^* \right)$, $\forall t$.
@@ -30,20 +30,20 @@ where the last inequality is according to \cref{asmp:gradient_dominant}. Denote 
     \delta_t &= f_t\left(\rvx_t\right) - f_{t-1}\left(\rvx_t\right) + f_{t-1}\left(\rvx_t\right) - f_t\left( \rvx_t^* \right) \\
     &\le \max\limits_{\rvw}{\left| f_{t}(\rvw) - f_{t-1}(\rvw) \right| } + f_{t-1}\left(\rvx_t\right) - f_t\left( \rvx_t^* \right) \\
     &= \max\limits_{\rvw}{\left| f_{t}(\rvw) - f_{t-1}(\rvw) \right| } + f_{t-1}\left(\rvx_t\right) - f_{t-1}\left(\rvx_{t-1}\right) + f_{t-1}\left(\rvx_{t-1}\right) - f_t\left( \rvx_t^* \right) \\
-    &\le \max\limits_{\rvw}{\left| f_{t}(\rvw) - f_{t-1}(\rvw) \right| } - \frac{\delta_{t-1}^2}{2L} + f_{t-1}\left(\rvx_{t-1}\right) - f_t\left( \rvx_t^* \right) \qquad \left( \text{by \cref{eq:f_t_progress}} \right) \\
-    &=  \max\limits_{\rvw}{\left| f_{t}(\rvw) - f_{t-1}(\rvw) \right| } - \frac{\delta_{t-1}^2}{2L} + f_{t-1}\left(\rvx_{t-1}\right) - f_{t-1}\left(\rvx_{t-1}^*\right) + f_{t-1}\left(\rvx_{t-1}^*\right) - f_t\left( \rvx_t^* \right) \\
-    &= \max\limits_{\rvw}{\left| f_{t}(\rvw) - f_{t-1}(\rvw) \right| } - \frac{\delta_{t-1}^2}{2L} + \delta_{t-1} + f_{t-1}\left(\rvx_{t-1}^*\right) - f_t\left( \rvx_t^* \right) \\
-    &= \max\limits_{\rvw}{\left| f_{t}(\rvw) - f_{t-1}(\rvw) \right| } - \frac{\delta_{t-1}^2}{2L} + \delta_{t-1} + f_{t-1}\left(\rvx_{t-1}^*\right) - f_{t-1}\left(\rvx_{t}^*\right) + f_{t-1}\left(\rvx_{t}^*\right) - f_t\left( \rvx_t^* \right) \\
-    &\le \max\limits_{\rvw}{\left| f_{t}(\rvw) - f_{t-1}(\rvw) \right| } - \frac{\delta_{t-1}^2}{2L} + \delta_{t-1} + f_{t-1}\left(\rvx_{t}^*\right) - f_t\left( \rvx_t^* \right) \qquad \left(f_{t-1}\left(\rvx_{t-1}^*\right) \coloneqq \min\limits_{\rvw}{f_{t-1}(\rvw)} \le f_{t-1}(\rvx_t^*) \right) \\
-    &\le \max\limits_{\rvw}{\left| f_{t}(\rvw) - f_{t-1}(\rvw) \right| } - \frac{\delta_{t-1}^2}{2L} + \delta_{t-1} + \max\limits_{\rvw}{\left| f_{t}(\rvw) - f_{t-1}(\rvw) \right| } \\
-    &= - \frac{\delta_{t-1}^2}{2L} + \delta_{t-1} + 2 \max\limits_{\rvw}{\left| f_{t}(\rvw) - f_{t-1}(\rvw) \right| }.
+    &\le \max\limits_{\rvw}{\left| f_{t}(\rvw) - f_{t-1}(\rvw) \right| } - \frac{G^2}{2L} \delta_{t-1}^2 + f_{t-1}\left(\rvx_{t-1}\right) - f_t\left( \rvx_t^* \right) \qquad \left( \text{by \cref{eq:f_t_progress}} \right) \\
+    &=  \max\limits_{\rvw}{\left| f_{t}(\rvw) - f_{t-1}(\rvw) \right| } - \frac{G^2}{2L} \delta_{t-1}^2 + f_{t-1}\left(\rvx_{t-1}\right) - f_{t-1}\left(\rvx_{t-1}^*\right) + f_{t-1}\left(\rvx_{t-1}^*\right) - f_t\left( \rvx_t^* \right) \\
+    &= \max\limits_{\rvw}{\left| f_{t}(\rvw) - f_{t-1}(\rvw) \right| } - \frac{G^2}{2L} \delta_{t-1}^2 + \delta_{t-1} + f_{t-1}\left(\rvx_{t-1}^*\right) - f_t\left( \rvx_t^* \right) \\
+    &= \max\limits_{\rvw}{\left| f_{t}(\rvw) - f_{t-1}(\rvw) \right| } - \frac{G^2}{2L} \delta_{t-1}^2 + \delta_{t-1} + f_{t-1}\left(\rvx_{t-1}^*\right) - f_{t-1}\left(\rvx_{t}^*\right) + f_{t-1}\left(\rvx_{t}^*\right) - f_t\left( \rvx_t^* \right) \\
+    &\le \max\limits_{\rvw}{\left| f_{t}(\rvw) - f_{t-1}(\rvw) \right| } - \frac{G^2}{2L} \delta_{t-1}^2 + \delta_{t-1} + f_{t-1}\left(\rvx_{t}^*\right) - f_t\left( \rvx_t^* \right) \qquad \left(f_{t-1}\left(\rvx_{t-1}^*\right) \coloneqq \min\limits_{\rvw}{f_{t-1}(\rvw)} \le f_{t-1}(\rvx_t^*) \right) \\
+    &\le \max\limits_{\rvw}{\left| f_{t}(\rvw) - f_{t-1}(\rvw) \right| } - \frac{G^2}{2L} \delta_{t-1}^2 + \delta_{t-1} + \max\limits_{\rvw}{\left| f_{t}(\rvw) - f_{t-1}(\rvw) \right| } \\
+    &= - \frac{G^2}{2L} \delta_{t-1}^2 + \delta_{t-1} + 2 \max\limits_{\rvw}{\left| f_{t}(\rvw) - f_{t-1}(\rvw) \right| }.
 \end{split}
 \end{equation*}
 Rearranging and summing up from $1$ to $T$,
 \begin{equation}
 \label{eq:delta_t_upper_bound}
 \begin{split}
-    \frac{1}{2L} \cdot \sum\limits_{t=1}^{T}{ \delta_{t-1}^2} &\le \sum\limits_{t=1}^{T}{\left[ \delta_{t-1} - \delta_{t} + 2 \max\limits_{\rvw}{\left| f_{t}(\rvw) - f_{t-1}(\rvw) \right|} \right] } \\
+    \frac{G^2}{2L} \cdot \sum\limits_{t=1}^{T}{ \delta_{t-1}^2} &\le \sum\limits_{t=1}^{T}{\left[ \delta_{t-1} - \delta_{t} + 2 \max\limits_{\rvw}{\left| f_{t}(\rvw) - f_{t-1}(\rvw) \right|} \right] } \\
     &= \sum\limits_{t=1}^{T}{ \left[ \delta_{t-1} - \delta_{t} \right] } + 2 \sum\limits_{t=0}^{T-1}{ \max\limits_{\rvw}{\left| f_{t+1}(\rvw) - f_{t}(\rvw) \right| } } \\
     &= \delta_0 - \delta_{T} + 2 V_T^f \qquad \left( \text{\cref{defi:function_variation}} \right) \\
     &\le 2 + 2 V_T^f \qquad \left(\text{\cref{asmp:boundedness_smoothness}}\right).
@@ -53,7 +53,7 @@ According to the Root-Mean Square-Arithmetic Mean inequality, the regret is uppe
 \begin{equation*}
 \begin{split}
     \sum\limits_{t=0}^{T-1}{\left[ f_t\left(\rvx_t\right) - f_t\left( \rvx_t^* \right) \right]} = \sum\limits_{t=1}^{T}{ \delta_{t-1}} &\le \sqrt{T \sum\limits_{t=1}^{T}{ \delta_{t-1}^2}} \\
-    &\le 2 \sqrt{L T \left( 1 + V_T^f \right)}. \qquad \left(\text{by \cref{eq:delta_t_upper_bound}}\right) \qedhere
+    &\le \frac{2}{G} \sqrt{L T \left( 1 + V_T^f \right)}. \qquad \left(\text{by \cref{eq:delta_t_upper_bound}}\right) \qedhere
 \end{split}
 \end{equation*}
 \end{proof}

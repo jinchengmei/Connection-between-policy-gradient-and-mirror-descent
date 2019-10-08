@@ -1,33 +1,34 @@
-\section{Online Learning with Non-Convex Objectives}
+\section{Online Learning with Non-Convex Objectives and Dynamic Regret}
 
 Online learning aims to learn changing objectives. We present general results for online learning with non-convex, smooth, gradient dominant functions.
 
-\begin{asmp}[Boundedness and Smoothness]
+\begin{asmp}[Bounded and smooth]
 \label{asmp:boundedness_smoothness}
 $\left| f_t\left(\rvx\right) \right| \le 1$, $\left\| \nabla f_t(\rvx ) - \nabla f_t(\rvy) \right\| \le L $, $\forall \rvx, \rvy$, $\forall t$.
 \end{asmp}
 
 \begin{asmp}[Gradient dominant]
 \label{asmp:gradient_dominant}
-$\left\| \nabla f_t\left(\rvx\right) \right\| \ge f_t\left(\rvx\right) - f_t\left(\rvx_t^*\right) \coloneqq f_t\left(\rvx\right) - \min_{\rvw}{ f_t\left(\rvw \right)}$, $\forall \rvx$, $\forall t$.
+$\left\| \nabla f_t\left(\rvx\right) \right\| \ge G \left[ f_t\left(\rvx\right) - \min_{\rvw}{ f_t\left(\rvw \right)} \right]$, $\forall \rvx$, $\forall t$.
 \end{asmp}
 
-\begin{defi}[Functional variation]
+\begin{defi}[Functional variation \citep{besbes2015non}]
 \label{defi:function_variation}
-\begin{equation*}
-\begin{split}
-    V_{T}^{f} \coloneqq \sum\limits_{t=0}^{T-1}{\max\limits_{\rvw}{\left| f_{t+1}(\rvw) - f_{t}(\rvw) \right| } }.
-\end{split}
-\end{equation*}
+$V_{T}^{f} \coloneqq \sum_{t=0}^{T-1}{\max\limits_{\rvw}{\left| f_{t+1}(\rvw) - f_{t}(\rvw) \right| } }.$
 \end{defi}
 
 \begin{thm}
 \label{thm:online_learning_regret}
 Given a sequence of functions $\left\{ f_t : t = 0, 1, 2, \dots, T-1 \right\}$ satisfying \cref{asmp:boundedness_smoothness} and \cref{asmp:gradient_dominant}. Online gradient update $\rvx_{t+1} \gets \rvx_{t} - \eta \nabla f_{t}\left(\rvx_{t}\right)$ with $\eta = 1/L$ satisfies,
-\begin{equation*}
+\begin{equation}
+\label{eq:online_learning_regret}
 \begin{split}
-    \sum\limits_{t=0}^{T-1}{\left[ f_t\left(\rvx_t\right) - f_t\left( \rvx_t^* \right) \right]} \le 2 \sqrt{L T \left( 1 + V_T^f \right)}.
+    \sum\limits_{t=0}^{T-1}{\left[ f_t\left(\rvx_t\right) - f_t\left( \rvx_t^* \right) \right]} \le \frac{2}{G} \sqrt{L T \left( 1 + V_T^f \right)},
 \end{split}
-\end{equation*}
+\end{equation}
+where $\rvx_t^* \coloneqq \argmin_{\rvw}{f_t(\rvw)}$, $\forall t$.
 \end{thm}
 
+\cref{thm:online_learning_regret} is novel and meaningful as, (1) instead of comparing with best in hindsight $\min_{\rvw}{\sum_{t=0}^{T-1}{f_t(\rvw)} }$, we consider changing optimal decision $f_t\left( \rvx_t^* \right)$, which is more difficult to upper bound; (2) unlike most existing work, here $f_t$ is not assumed to be convex \citep{yang2016tracking} or quasi-convex \citep{gao2018online}; (3) we analyze practical gradient update; (4) our assumptions are  satisfied by randomly initialized neural networks, as justified later in next section.
+
+To obtain sub-linear regret in \cref{eq:online_learning_regret}, it is sufficient to control the functional variation $V_T^f$ to be sub-linear $o(T)$. However, $V_T^f$ is usually linear $O(T)$ in practice. For example, in stochastic MAB, if we take sampled reward as learning signal, then at each step signal is changing in order $O(1)$ according to random sampling. As a result, $V_T^f$ will be $O(T)$. Therefore, we use empirical mean estimation and exploration to control $V_T^f$.
