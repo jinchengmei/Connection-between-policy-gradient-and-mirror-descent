@@ -1,0 +1,51 @@
+\section{Appendix}
+
+\subsection{Proof for \cref{thm:online_learning_regret}}
+
+\textbf{\cref{thm:online_learning_regret}.} Given functions $\left\{ f_t : t = 1, 2, \dots, T \right\}$ satisfying \cref{asmp:boundedness_smoothness} and \cref{asmp:gradient_dominant}, 
+ Then the regret of the  online gradient descent satisfies,
+\begin{equation*}
+\begin{split}
+    \sum\limits_{t=0}^{T-1}{\left[ f_t\left(\rvx_t\right) - f_t\left( \rvx_* \right) \right]} \le 2 \sqrt{ab} \cdot T^{\frac{3}{4}}.
+\end{split}
+\end{equation*}
+\begin{proof}
+First, note that smoothness in \cref{asmp:boundedness_smoothness} is equivalent with
+\begin{equation*}
+\begin{split}
+    f_t\left(\rvx^\prime\right) \le f_t\left(\rvx\right) + \left\langle \nabla f_t\left(\rvx^\prime\right) , \rvx^\prime - \rvx \right\rangle +  \frac{b}{2} \left\| \rvx^\prime - \rvx \right\|_2^2.
+\end{split}
+\end{equation*}
+. Denote $\delta_t \triangleq f_t\left(\rvx_t\right) - f_t\left( \rvx_* \right)$.
+\begin{equation*}
+\begin{split}
+    \delta_t &= f_t\left(\rvx_t\right) - f_{t-1}\left(\rvx_t\right) + f_{t-1}\left(\rvx_t\right) - f_{t-1}\left(\rvx_{t-1}\right) + f_{t-1}\left(\rvx_{t-1}\right) - f_{t-1}\left( \rvx_* \right) + f_{t-1}\left( \rvx_* \right) -  f_t\left( \rvx_* \right) \\
+    &\le \frac{a}{\sqrt{t}} + \left\langle \nabla f_{t-1}\left(\rvx_{t-1}\right),  \rvx_t - \rvx_{t-1} \right\rangle + \frac{b}{2}\left\| \rvx_t - \rvx_{t-1} \right\|_2^2 + \delta_{t-1} + \frac{a}{\sqrt{t}} \\
+    &= \frac{2a}{\sqrt{t}} - \eta \left\| \nabla f_{t-1}\left(\rvx_{t-1}\right) \right\|_2^2 + \frac{b \eta^2}{2} \left\| \nabla f_{t-1}\left(\rvx_{t-1}\right)  \right\|_2^2 + \delta_{t-1} \\
+    &= \frac{2a}{\sqrt{t}} - \frac{1}{2b} \left\| \nabla f_{t-1}\left(\rvx_{t-1}\right) \right\|_2^2 + \delta_{t-1} \\
+    &\le \delta_{t-1} - \frac{1}{2b} \cdot \delta_{t-1}^2 + \frac{2a}{\sqrt{t}}.
+\end{split}
+\end{equation*}
+Rearranging and summing up from $1$ to $T$,
+\begin{equation*}
+\begin{split}
+    \frac{1}{2b} \cdot \sum\limits_{t=1}^{T}{ \delta_{t-1}^2} &\le \sum\limits_{t=1}^{T}{\left[ \delta_{t-1} - \delta_{t} + f_t\left(\rvx_t\right) - f_{t-1}\left(\rvx_t\right) + f_{t-1}\left( \rvx_* \right) -  f_t\left( \rvx_* \right) \right] } \\
+    &= \delta_0 - \delta_{T} + f_0\left( \rvx_* \right) - f_{T}\left( \rvx_* \right) + \sum\limits_{t=1}^{T}{ \left[ f_t\left(\rvx_t\right) - f_{t-1}\left(\rvx_t\right) \right] } \\
+    &\le 6 + a \sqrt{T}.
+\end{split}
+\end{equation*}
+By the the Root-Mean Square-Arithmetic Mean inequality,
+\begin{equation*}
+\begin{split}
+    \frac{\sum\limits_{t=1}^{T}{ \delta_{t-1}}}{T} \le \sqrt{\frac{\sum\limits_{t=1}^{T}{ \delta_{t-1}^2}}{T}},
+\end{split}
+\end{equation*}
+the regret is upper bounded by,
+\begin{equation*}
+\begin{split}
+    \sum\limits_{t=1}^{T}{ \delta_{t-1}} &\le \sqrt{ T \cdot \sum\limits_{t=1}^{T}{ \delta_{t-1}^2} } \\
+    &\le \sqrt{ T \cdot 2b \cdot \left( 6 + a \sqrt{T} \right) } \\
+    &\le 2 \sqrt{ab} \cdot T^{\frac{3}{4}}. \qedhere
+\end{split}
+\end{equation*}
+\end{proof}
