@@ -175,8 +175,6 @@ holds with probability at least $1 - K \exp\left\{ -  \frac{t^{\frac{1}{3} + 2 \
 holds with probability at least $1 - 2 K \exp\left\{ - \frac{t^{3\beta}}{ K } \right\}$.
 \end{proof}
 
-=======================updated
-
 \begin{thm}
 \label{thm:dynamic_regret_sublinear}
     If $m \ge T^2/K^2$, $\eta = \frac{1}{2 K m}$, then the dynamic NN regret satisfies,
@@ -188,120 +186,118 @@ holds with probability at least $1 - 2 K \exp\left\{ - \frac{t^{3\beta}}{ K } \r
 with probability at least $1 - \exp\left\{ - \frac{T^2}{16 K} \right\} \ge 1 - \frac{16 K}{T^2}$.
 \end{thm}
 \begin{proof}
-    Denote $\delta_t \triangleq \left( {\rvpi_t^*} - \rvpi\left( \rmW_t \right) \right)^\top \hat{\rvr}_t$. Decompose $\delta_t$ as follows,
+The proof bears similarity with \cref{thm:online_learning_regret}.
+    Denote $\delta_t \coloneqq ( {\rvpi_t^*} - \rvpi_t )^\top \hat{\rvr}_t$. Decompose $\delta_t$ as,
 \begin{equation}
-\label{eq:dynamic_regret_decomposition}
+\label{eq:dynamic_regret_decomposition_1}
 \begin{split}
-    \delta_t &= {\rvpi_t^*}^\top \left( \hat{\rvr}_t - \hat{\rvr}_{t-1}\right) + \left( {\rvpi_t^*} - {\rvpi_{t-1}^*} \right)^\top \hat{\rvr}_{t-1}  + \left( {\rvpi_{t-1}^*} - \rvpi\left( \rmW_{t-1} \right) \right)^\top \hat{\rvr}_{t-1} \\
-    &\quad + \left(  \rvpi\left( \rmW_{t-1} \right) - \rvpi\left( \rmW_t \right) 
-    \right)^\top \hat{\rvr}_{t-1} + \rvpi\left( \rmW_t \right)^\top \left( \hat{\rvr}_{t-1} - \hat{\rvr}_t \right).
+    \delta_t &= {\rvpi_t^*}^\top ( \hat{\rvr}_t - \hat{\rvr}_{t-1}) + {\rvpi_t^*}^\top \hat{\rvr}_{t-1} - \rvpi_t^\top \hat{\rvr}_t \\
+    &\le \max\limits_{\rvpi}{ \left| \rvpi^\top ( \hat{\rvr}_t - \hat{\rvr}_{t-1}) \right| } + {\rvpi_t^*}^\top \hat{\rvr}_{t-1} - \rvpi_t^\top \hat{\rvr}_t \\
+    &\le \left\| \hat{\rvr}_t - \hat{\rvr}_{t-1} \right\|_1 + {\rvpi_t^*}^\top \hat{\rvr}_{t-1} - \rvpi_t^\top \hat{\rvr}_t \\
+    &= \frac{ \left| R_{t-1} - \hat{r}_{t-1}(A_{t-1}) \right| }{n_t(A_{t-1})} + {\rvpi_t^*}^\top \hat{\rvr}_{t-1} - \rvpi_t^\top \hat{\rvr}_t \\
+    &\le \frac{ 1 }{n_t(A_{t-1})} + {\rvpi_t^*}^\top \hat{\rvr}_{t-1} - \rvpi_t^\top \hat{\rvr}_t \\
+    &\le \frac{ 2 K }{t^{\frac{2}{3} + \beta}} + {\rvpi_t^*}^\top \hat{\rvr}_{t-1} - \rvpi_t^\top \hat{\rvr}_t,
 \end{split}
 \end{equation}
-We upper bound each term in the right hand side. Firstly,
-\begin{equation*}
+where the last inequality is by $n_{t}(A_{t-1}) \ge \frac{t^{\frac{2}{3} + \beta}}{ 2 K }$. Expanding \cref{eq:dynamic_regret_decomposition_1}, 
+\begin{equation}
+\label{eq:dynamic_regret_decomposition_2}
 \begin{split}
-    {\rvpi_t^*}^\top \left( \hat{\rvr}_t - \hat{\rvr}_{t-1}\right) &= \frac{\pi_{t}^*\left(A_{t-1}\right)}{n_{t}\left(A_{t-1}\right)} \left[ R_{ A_{t-1}}\left( n_{t}\left(A_{t-1}\right) -1 \right) - \hat{r}_{t-1}\left(A_{t-1}\right) \right] \\
-    &\le \frac{1}{n_{t}\left(A_{t-1}\right)} \le \frac{ 2 h }{t^{\frac{2}{3} + \beta}},
+    \delta_t &\le \frac{ 2 K }{t^{\frac{2}{3} + \beta}} + ( {\rvpi_t^*} - {\rvpi_{t-1}^*} )^\top \hat{\rvr}_{t-1} + {\rvpi_{t-1}^*}^\top \hat{\rvr}_{t-1} - \rvpi_t^\top \hat{\rvr}_t \\
+    &\le \frac{ 2 K }{t^{\frac{2}{3} + \beta}} + {\rvpi_{t-1}^*}^\top \hat{\rvr}_{t-1} - \rvpi_t^\top \hat{\rvr}_t \\
+    &= \frac{ 2 K }{t^{\frac{2}{3} + \beta}} + ( {\rvpi_{t-1}^*} - \rvpi_{t-1} )^\top \hat{\rvr}_{t-1} + \rvpi_{t-1}^\top \hat{\rvr}_{t-1} - \rvpi_t^\top \hat{\rvr}_t \\
+    &= \frac{ 2 K }{t^{\frac{2}{3} + \beta}} + \delta_{t-1} + \rvpi_{t-1}^\top \hat{\rvr}_{t-1} - \rvpi_t^\top \hat{\rvr}_t \\  
+    &= \frac{ 2 K }{t^{\frac{2}{3} + \beta}} + \delta_{t-1} + ( \rvpi_{t-1}  - \rvpi_t )^\top \hat{\rvr}_{t-1} + \rvpi_t^\top ( \hat{\rvr}_{t-1} - \hat{\rvr}_t) \\
+    &\le \frac{ 2 K }{t^{\frac{2}{3} + \beta}} + \delta_{t-1} + ( \rvpi_{t-1}  - \rvpi_t )^\top \hat{\rvr}_{t-1} + \max\limits_{\rvpi}{ \left| \rvpi^\top ( \hat{\rvr}_t - \hat{\rvr}_{t-1}) \right| } \\
+    &\le \frac{ 2 K }{t^{\frac{2}{3} + \beta}} + \delta_{t-1} + ( \rvpi_{t-1}  - \rvpi_t )^\top \hat{\rvr}_{t-1} + \frac{ 2 K }{t^{\frac{2}{3} + \beta}} \\
+    &= \frac{ 4 K }{t^{\frac{2}{3} + \beta}} + \delta_{t-1} + ( \rvpi_{t-1}  - \rvpi_t )^\top \hat{\rvr}_{t-1}
 \end{split}
-\end{equation*}
-by $n_{t}\left(A_{t-1}\right) = n_{t-1}\left(A_{t-1}\right) + 1$, and $n_{t}\left(A_{t-1}\right) \ge \frac{t^{\frac{2}{3} + \beta}}{ 2 h }$, $\forall t \ge 1$. By the definition of ${\rvpi_{t-1}^*}$,
-\begin{equation*}
-    \left( {\rvpi_t^*} - {\rvpi_{t-1}^*} \right)^\top \hat{\rvr}_{t-1} \le 0.
-\end{equation*}
-Note that according to the definition of $\delta_t$,
-\begin{equation*}
-    \left( {\rvpi_{t-1}^*} - \rvpi\left( \rmW_{t-1} \right) \right)^\top \hat{\rvr}_{t-1} = \delta_{t-1}.
-\end{equation*}
-By \cref{lem:gradient_coupling}, \cref{lem:empirically_expected_reward_parameter_smoothness}, $\eta = \frac{1}{2 h m}$, and \cref{lem:gradient_lower_bound},
-\begin{equation*}
+\end{equation}
+where the first inequality is by $( {\rvpi_t^*} - {\rvpi_{t-1}^*} )^\top \hat{\rvr}_{t-1} \le 0$. Upper bounding \cref{eq:dynamic_regret_decomposition_2},
+\begin{equation}
+\label{eq:dynamic_regret_decomposition_3}
 \begin{split}
-    &\left( \rvpi\left( \rmW_{t-1} \right) - \rvpi\left( \rmW_t \right) \right)^\top \hat{\rvr}_{t-1} \le - \frac{1}{4 h m} \left\| \frac{d \rvpi\left( \rmW_{t-1} \right)^\top \hat{\rvr}_{t-1}}{d \rmW_{t-1}} \right\|_F^2 \\
-    &\quad = - \frac{1}{4 h m} \sum\limits_{r=1}^{m}{ \left\| \frac{d \rvpi\left( \rmW_{t-1} \right)^\top \hat{\rvr}_{t-1}}{d \rvw_r(t-1)} \right\|_2^2 } \le - \frac{c^2}{4 h} \left[ \left( {\rvpi_{t-1}^*} - \rvpi\left( \rmW_{t-1} \right) \right)^\top \hat{\rvr}_{t-1}  \right]^2 = - \frac{c^2}{4 h} \cdot \delta_{t-1}^2.
+    \delta_t &\le \frac{ 4 K }{t^{\frac{2}{3} + \beta}} + \delta_{t-1} - \frac{1}{4 K m} \left\| \frac{d \rvpi_{t-1}^\top \hat{\rvr}_{t-1}}{d \rmW_{t-1}} \right\|_F^2  \qquad \left( \text{by \cref{lem:gradient_coupling}, \cref{lem:empirically_expected_reward_parameter_smoothness}}\right) \\
+    &= \frac{ 4 K }{t^{\frac{2}{3} + \beta}} + \delta_{t-1} - \frac{1}{4 K m} \sum\limits_{r=1}^{m}{ \left\| \frac{d \rvpi_{t-1}^\top \hat{\rvr}_{t-1}}{d \rvw_r(t-1)} \right\|^2 } \\
+    &\le \frac{ 4 K }{t^{\frac{2}{3} + \beta}} + \delta_{t-1} - \frac{c^2}{4 K} \left[ ( {\rvpi_{t-1}^*} - \rvpi_{t-1})^\top \hat{\rvr}_{t-1} \right]^2 \qquad \left( \text{by \cref{lem:gradient_lower_bound}}\right) \\
+    &= \frac{ 4 K }{t^{\frac{2}{3} + \beta}} + \delta_{t-1} - \frac{c^2}{4 K} \cdot \delta_{t-1}^2.
 \end{split}
-\end{equation*}
-Using similar arguments,
-\begin{equation*}
-    \rvpi\left( \rmW_t \right)^\top \left( \hat{\rvr}_{t-1} - \hat{\rvr}_t  \right) \le \frac{ 2 h }{t^{\frac{2}{3} + \beta}}.
-\end{equation*}
-Plugging the above upper bounds into \cref{eq:dynamic_regret_decomposition},
-\begin{equation*}
-    \delta_t \le \delta_{t-1} - \frac{c^2}{4 h} \cdot \delta_{t-1}^2 + \frac{ 4 h }{t^{\frac{2}{3} + \beta}}.
-\end{equation*}
+\end{equation}
 Rearranging and summing up from $1$ to $T-1$,
 \begin{equation*}
 \begin{split}
-    \sum\limits_{t=1}^{T-1}{\delta_{t}^2} = \sum\limits_{t=2}^{T}{\delta_{t-1}^2} \le \frac{4 h}{ c^2} \cdot  \sum\limits_{t=2}^{T} { \left[ \delta_{t-1} - \delta_t + \frac{ 4 h }{t^{\frac{2}{3} + \beta}} \right] } \le \frac{49 h^2}{ c^2} \cdot T^{\frac{1}{3}}.
+    \sum\limits_{t=1}^{T-1}{\delta_{t}^2} = \sum\limits_{t=2}^{T}{\delta_{t-1}^2} \le \frac{4 K}{ c^2} \cdot  \sum\limits_{t=2}^{T} { \left[ \delta_{t-1} - \delta_t + \frac{ 4 K }{t^{\frac{2}{3} + \beta}} \right] } \le \frac{49 K^2}{ c^2} \cdot T^{\frac{1}{3}}.
 \end{split}
 \end{equation*}
 By the Root-Mean Square-Arithmetic Mean inequality,
 \begin{equation*}
 \begin{split}
-    \sum\limits_{t=1}^{T-1}{\delta_{t}} \le \sqrt{\left(T  - 1 \right) \cdot \sum\limits_{t=1}^{T-1}{\delta_{t}^2}} \le \frac{7 h}{c} \cdot  T^{\frac{2}{3}}.
+    \sum\limits_{t=1}^{T-1}{\delta_{t}} \le \sqrt{\left(T  - 1 \right) \cdot \sum\limits_{t=1}^{T-1}{\delta_{t}^2}} \le \frac{7 K}{c} \cdot  T^{\frac{2}{3}}.
 \end{split}
 \end{equation*}
-Let $\sigma = \frac{2 \sqrt{2}}{\sqrt{\pi m}}$ and $\tau = \frac{\sigma \sqrt{\pi}}{2 \sqrt{2}} = \frac{1}{\sqrt{m}}$ in \cref{lem:gradient_coupling}. Since $m \ge \frac{T^2}{h^2}$, we have $T \le \frac{\tau}{2 \eta}$ such that \cref{lem:gradient_coupling} holds during all the $T$ steps. According to \cref{lem:gradient_coupling_in_total}, with probability at least $1 - \exp\left\{ - \frac{m}{8} \left( 1 - \frac{\sqrt{2}\tau}{\sqrt{\pi}\sigma} \right) \right\} = 1 - \exp\left\{ - \frac{m}{16} \right\} \ge 1 - \exp\left\{ - \frac{T^2}{16 h^2} \right\}$ over the random initialization of the neural networks, all the intermediately used lemmas hold, therefore the results hold.
+Let $\sigma = \frac{2 \sqrt{2}}{\sqrt{\pi m}}$ and $\tau = \frac{\sigma \sqrt{\pi}}{2 \sqrt{2}} = \frac{1}{\sqrt{m}}$ in \cref{lem:gradient_coupling}. Since $m \ge \frac{T^2}{K^2}$, we have $T \le \frac{\tau}{2 \eta}$, i.e., \cref{lem:gradient_coupling} holds within $T$ steps. By \cref{lem:gradient_coupling_in_total}, with probability at least $1 - \exp\left\{ - \frac{m}{8} ( 1 - \frac{\sqrt{2}\tau}{\sqrt{\pi}\sigma} ) \right\} = 1 - \exp\left\{ - \frac{m}{16} \right\} \ge 1 - \exp\left\{ - \frac{T^2}{16 K^2} \right\}$ over random initialization of neural networks, all the intermediate lemmas hold, therefore the results hold.
 \end{proof}
 
-\subsection{Proof of Lemmas Supporting \cref{thm:dynamic_regret_sublinear}}
+\subsection{Proof for Lemmas Supporting \cref{thm:dynamic_regret_sublinear}}
 
-\cref{thm:dynamic_regret_sublinear} relies on two arguments. First, the dynamic expected loss is smooth in the logit space, and small policy gradient updates preserve the signs of ReLU outputs, therefore highly correlates the logit derivative and the policy gradient. Second, by the over-parameterization theory, gradient norm is lower bounded by expected loss around initialization, which means there is no bad local minima near the randomly initialized neural network policy $\rvpi\left( \rmW_0 \right)$.
+\cref{thm:dynamic_regret_sublinear} relies on two results. First, expected reward is smooth in logit space, and small policy gradient updates preserve ReLU signs, therefore highly correlates logit derivative and policy gradient. Second, by the over-parameterization neural network theory, gradient norm is lower bounded by expected loss around initialization, which implies no bad local minima near the randomly initialized neural network policy $\rvpi_0$.
 
 \begin{lem}
 \label{lem:logit_smoothness}
-Let $\rvpi(\rvo^\prime)$ and $\rvpi( \rvo)$ be the softmax policies of any logit vectors $\rvo^\prime, \rvo \in \sR^h$, respectively. $\forall \rvr \in \left[ -1, 1\right]^h$,
+Let $\rvpi(\rvo^\prime)$ and $\rvpi( \rvo)$ be the softmax policies of logit vectors $\rvo^\prime, \rvo \in \sR^K$, respectively. $\forall \rvr \in \left[ -1, 1\right]^K$,
 \begin{equation*}
-    \rvpi(\rvo^\prime)^\top \rvr \le \rvpi(\rvo)^\top \rvr + \left\langle \frac{d \rvpi(\rvo)^\top \rvr}{d \rvo}, \rvo^\prime - \rvo \right\rangle + \left\| \rvo^\prime - \rvo \right\|_2^2.
+    ( \rvpi(\rvo^\prime) - \rvpi(\rvo)) ^\top \rvr \le \left\langle \frac{d \rvpi(\rvo)^\top \rvr}{d \rvo}, \rvo^\prime - \rvo \right\rangle + \| \rvo^\prime - \rvo \|^2.
 \end{equation*}
 \end{lem}
 \begin{proof}
-Denote $\rvo_{\xi} = \rvo + \xi \left( \rvo^\prime - \rvo \right)$.
+Denote $\rvo_{\xi} = \rvo + \xi ( \rvo^\prime - \rvo )$.
 \begin{equation*}
 \begin{split}
-    &\left| \rvpi\left( \rvo^\prime \right)^\top \rvr - \rvpi\left( \rvo \right)^\top \rvr - \left\langle \frac{d \rvpi\left( \rvo \right)^\top \rvr}{d \rvo}, \rvo^\prime - \rvo \right\rangle \right| \\
-    &\quad = \left| \int_0^1{ \frac{d \rvpi\left( \rvo + \xi \left( \rvo^\prime - \rvo \right) \right)^\top \rvr}{d \xi} d\xi} - \left\langle \frac{d \rvpi\left( \rvo \right)^\top \rvr}{d \rvo}, \rvo^\prime - \rvo \right\rangle \right| \\
-    &\quad = \left| \int_0^1{ \left\langle \frac{d \rvpi\left( \rvo + \xi \left( \rvo^\prime - \rvo \right) \right)^\top \rvr}{d \left( \rvo + \xi \left( \rvo^\prime - \rvo \right) \right)}, \rvo^\prime - \rvo \right\rangle d\xi} - \left\langle \frac{d \rvpi\left( \rvo \right)^\top \rvr}{d \rvo}, \rvo^\prime - \rvo \right\rangle \right| \\
-    &\quad = \left| \int_0^1{ \left\langle \frac{d \rvpi\left( \rvo_{\xi} \right)^\top \rvr}{d \rvo_{\xi}} - \frac{d \rvpi\left( \rvo \right)^\top \rvr}{d \rvo}, \rvo^\prime - \rvo \right\rangle d\xi} \right| \\
-    &\quad \le \int_0^1{ \left| \left\langle \frac{d \rvpi\left( \rvo_{\xi} \right)^\top \rvr}{d \rvo_{\xi}} - \frac{d \rvpi\left( \rvo \right)^\top \rvr}{d \rvo}, \rvo^\prime - \rvo \right\rangle \right| d\xi} \\
-    &\quad \le \int_0^1{ \left\| \frac{d \rvpi\left( \rvo_{\xi} \right)^\top \rvr}{d \rvo_{\xi}} - \frac{d \rvpi\left( \rvo \right)^\top \rvr}{d \rvo} \right\|_2 \cdot \left\| \rvo^\prime - \rvo \right\|_2 d\xi} \\
-    &\quad = \int_0^1{ \left\| \rmH\left( \rvpi\left( \rvo_{\xi} \right)\right) \rvr - \rmH\left( \rvpi\left( \rvo \right)\right) \rvr \right\|_2 \cdot \left\| \rvo^\prime - \rvo \right\|_2 d\xi} \\
-    &\quad = \int_0^1{ \left\| \int_0^1{\left\langle \frac{d \rmH \left( \rvpi\left( \rvo + \mu\left( \rvo_{\xi} - \rvo \right) \right) \right) \rvr }{d \left( \rvo + \mu\left( \rvo_{\xi} - \rvo \right) \right)}, \rvo_{\xi} - \rvo \right\rangle d\mu} \right\|_2 \cdot \left\| \rvo^\prime - \rvo \right\|_2 d\xi} \\
-    &\quad \le \int_0^1{  \int_0^1{ \left\| \left\langle \frac{d \rmH \left( \rvpi\left( \rvo + \mu\left( \rvo_{\xi} - \rvo \right) \right) \right) \rvr }{d \left( \rvo + \mu\left( \rvo_{\xi} - \rvo \right) \right)}, \rvo_{\xi} - \rvo \right\rangle \right\|_2 d\mu} \cdot \left\| \rvo^\prime - \rvo \right\|_2 d\xi} \\
-    &\quad \le \int_0^1{  \int_0^1{ \left\| \frac{d \rmH \left( \rvpi\left( \rvo + \mu\left( \rvo_{\xi} - \rvo \right) \right) \right) \rvr }{d \left( \rvo + \mu\left( \rvo_{\xi} - \rvo \right) \right)} \right\|_2 \cdot \left\| \rvo_{\xi} - \rvo \right\|_2 d\mu} \cdot \left\| \rvo^\prime - \rvo \right\|_2 d\xi} \\
-    &\quad = \int_0^1{  \int_0^1{ \left\| \frac{d \rmH \left( \rvpi\left( \rvo + \mu\left( \rvo_{\xi} - \rvo \right) \right) \right) \rvr }{d \left( \rvo + \mu\left( \rvo_{\xi} - \rvo \right) \right)} \right\|_2 d\mu} \cdot \xi \cdot \left\| \rvo^\prime - \rvo \right\|_2^2 d\xi} \\
-    &\quad \le \int_0^1{  \int_0^1{ 2 d\mu} \cdot \xi \cdot \left\| \rvo^\prime - \rvo \right\|_2^2 d\xi} \\
-    &\quad = \left\| \rvo^\prime - \rvo \right\|_2^2,
+    &\left| \rvpi( \rvo^\prime )^\top \rvr - \rvpi( \rvo )^\top \rvr - \left\langle \frac{d \rvpi( \rvo )^\top \rvr}{d \rvo}, \rvo^\prime - \rvo \right\rangle \right| \\
+    &\quad = \left| \int_0^1{ \frac{d \rvpi( \rvo + \xi ( \rvo^\prime - \rvo ) )^\top \rvr}{d \xi} d\xi} - \left\langle \frac{d \rvpi( \rvo )^\top \rvr}{d \rvo}, \rvo^\prime - \rvo \right\rangle \right| \\
+    &\quad = \left| \int_0^1{ \left\langle \frac{d \rvpi( \rvo + \xi ( \rvo^\prime - \rvo ) )^\top \rvr}{d ( \rvo + \xi ( \rvo^\prime - \rvo ) )}, \rvo^\prime - \rvo \right\rangle d\xi} - \left\langle \frac{d \rvpi( \rvo )^\top \rvr}{d \rvo}, \rvo^\prime - \rvo \right\rangle \right| \\
+    &\quad = \left| \int_0^1{ \left\langle \frac{d \rvpi( \rvo_{\xi} )^\top \rvr}{d \rvo_{\xi}} - \frac{d \rvpi( \rvo )^\top \rvr}{d \rvo}, \rvo^\prime - \rvo \right\rangle d\xi} \right| \\
+    &\quad \le \int_0^1{ \left| \left\langle \frac{d \rvpi( \rvo_{\xi} )^\top \rvr}{d \rvo_{\xi}} - \frac{d \rvpi( \rvo )^\top \rvr}{d \rvo}, \rvo^\prime - \rvo \right\rangle \right| d\xi} \\
+    &\quad \le \int_0^1{ \left\| \frac{d \rvpi( \rvo_{\xi} )^\top \rvr}{d \rvo_{\xi}} - \frac{d \rvpi( \rvo )^\top \rvr}{d \rvo} \right\| \cdot \| \rvo^\prime - \rvo \| d\xi} \\
+    &\quad = \int_0^1{ \| \rmH( \rvpi( \rvo_{\xi} )) \rvr - \rmH( \rvpi( \rvo )) \rvr \| \cdot \| \rvo^\prime - \rvo \| d\xi} \\
+    &\quad = \int_0^1{ \left\| \int_0^1{\left\langle \frac{d \rmH ( \rvpi( \rvo + \mu( \rvo_{\xi} - \rvo ) ) ) \rvr }{d ( \rvo + \mu( \rvo_{\xi} - \rvo ) )}, \rvo_{\xi} - \rvo \right\rangle d\mu} \right\| \cdot \| \rvo^\prime - \rvo \| d\xi} \\
+    &\quad \le \int_0^1{  \int_0^1{ \left\| \left\langle \frac{d \rmH ( \rvpi( \rvo + \mu( \rvo_{\xi} - \rvo ) ) ) \rvr }{d ( \rvo + \mu( \rvo_{\xi} - \rvo ) )}, \rvo_{\xi} - \rvo \right\rangle \right\| d\mu} \cdot \| \rvo^\prime - \rvo \| d\xi} \\
+    &\quad \le \int_0^1{  \int_0^1{ \left\| \frac{d \rmH ( \rvpi( \rvo + \mu( \rvo_{\xi} - \rvo ) ) ) \rvr }{d ( \rvo + \mu( \rvo_{\xi} - \rvo ) )} \right\| \cdot \| \rvo_{\xi} - \rvo \| d\mu} \cdot \| \rvo^\prime - \rvo \| d\xi} \\
+    &\quad = \int_0^1{  \int_0^1{ \left\| \frac{d \rmH ( \rvpi( \rvo + \mu( \rvo_{\xi} - \rvo ) ) ) \rvr }{d ( \rvo + \mu( \rvo_{\xi} - \rvo ) )} \right\| d\mu} \cdot \xi \cdot \| \rvo^\prime - \rvo \|^2 d\xi} \\
+    &\quad \le \int_0^1{  \int_0^1{ 2 d\mu} \cdot \xi \cdot \| \rvo^\prime - \rvo \|^2 d\xi} \\
+    &\quad = \| \rvo^\prime - \rvo \|^2,
 \end{split}
 \end{equation*}
-where the last inequality is according to \cref{lem:Hr_spectral_norm_upper_bound}.
+where the last inequality is according to \cref{lem:Hr_spectral_norm_upper_bound} (also for the definition of $\rmH$).
 \end{proof}
 
 \begin{lem}
 \label{lem:Hr_spectral_norm_upper_bound}
-    Let $\rvo \in \sR^h$ be any logit vector, and $\rvpi(\rvo)$ be the softmax policy of $\rvo$ at state $\rvs$. Denote $\rmH\left( \rvpi \left(\rvo \right) \right) \triangleq \Delta \left( \rvpi \left(\rvo \right) \right) - \rvpi \left(\rvo \right) \rvpi \left(\rvo \right)^\top$, where $\Delta \left( \rvpi \left(\rvo \right) \right) \in \sR^{h \times h}$ is a matrix with $\rvpi \left(\rvo \right)$ as its diagonal. $\forall \rvr \in \left[ -1, 1\right]^h$,
+    Let $\rvo \in \sR^K$ be any logit vector, and $\rvpi(\rvo)$ be the softmax policy of $\rvo$. Denote $\rmH( \rvpi (\rvo ) ) \coloneqq \Delta ( \rvpi (\rvo ) ) - \rvpi (\rvo ) \rvpi (\rvo )^\top$, where $\Delta ( \rvpi (\rvo ) ) \in \sR^{K \times K}$ is a diagonal matrix with $\rvpi (\rvo )$ as its diagonal. $\forall \rvr \in \left[ -1, 1\right]^K$,
 \begin{equation*}
-    \left\| \frac{d \rmH\left( \rvpi \left(\rvo \right) \right) \rvr}{d \rvo } \right\|_2 \le 2,
+    \left\| \frac{d \rmH( \rvpi (\rvo ) ) \rvr}{d \rvo } \right\| \le 2,
 \end{equation*}
-where $\left\| \cdot \right\|_2$ is the matrix spectral norm.
+where $\| \cdot \|_2$ is the matrix spectral norm.
 \end{lem}
 \begin{proof}
-    Denote $\rmS \triangleq \frac{d \rmH\left( \rvpi \left(\rvo \right) \right) \rvr}{d \rvo } \in \sR^{h \times h}$. $\forall s, t \in [h]$,
+    Denote $\rmS \coloneqq \frac{d \rmH( \rvpi (\rvo ) ) \rvr}{d \rvo } \in \sR^{K \times K}$. $\forall s, t \in [K]$,
 \begin{equation*}
 \begin{split}
-    S_{s, t} &= \frac{d \pi_{s} \left( r_{s} - \rvpi^\top \rvr \right) }{d o_{t}} \\
-    &= \frac{d \pi_{s} }{d o_{t}} \left( r_{s} - \rvpi^\top \rvr \right) + \pi_{s} \frac{d \left( r_{s} - \rvpi^\top \rvr \right) }{d o_{t}} \\
-    &=\left ( \sI\left\{ s = t\right\} \pi_{t} -  \pi_{s } \pi_{t} \right) \left( r_{s} - \rvpi^\top \rvr \right) - \pi_{s} \left( \pi_{t} r_{t} - \pi_{t} \rvpi^\top \rvr \right).
+    S_{s, t} &= \frac{d \pi_{s} ( r_{s} - \rvpi^\top \rvr ) }{d o_{t}} \\
+    &= \frac{d \pi_{s} }{d o_{t}} ( r_{s} - \rvpi^\top \rvr ) + \pi_{s} \frac{d ( r_{s} - \rvpi^\top \rvr ) }{d o_{t}} \\
+    &= ( \sI\{ s = t\} \pi_{t} -  \pi_{s } \pi_{t} ) ( r_{s} - \rvpi^\top \rvr ) - \pi_{s} ( \pi_{t} r_{t} - \pi_{t} \rvpi^\top \rvr ).
 \end{split}
 \end{equation*}
-For any vector $\rvx \in \sR^h$, 
+For any $\rvx \in \sR^K$, 
 \begin{equation*}
 \begin{split}
     \rvx^\top \rmS \rvx &= \sum\limits_{s=1}^{h}{ \sum\limits_{t=1}^{h}{ S_{s,t} x_s x_t} } \\
     &= \expectation\limits_{\rvpi}\left[ \rvr \cdot \rvx \cdot \rvx \right] - \expectation\limits_{\rvpi}\left[ \rvr \right] \cdot \expectation\limits_{\rvpi}\left[ \rvx \cdot \rvx \right] - \expectation\limits_{\rvpi}\left[ \rvr \cdot \rvx \right] \cdot \expectation\limits_{\rvpi}\left[ \rvx \right] + \expectation\limits_{\rvpi}\left[ \rvr \right] \cdot \left( \expectation\limits_{\rvpi}\left[ \rvx \right] \right)^2  - \expectation\limits_{\rvpi}\left[ \rvr \cdot \rvx \right] \cdot \expectation\limits_{\rvpi}\left[ \rvx \right] + \expectation\limits_{\rvpi}\left[ \rvr \right] \cdot \left( \expectation\limits_{\rvpi}\left[ \rvx \right] \right)^2 \\
     &\le \expectation\limits_{\rvpi}\left[ \rvr \cdot \rvx \cdot \rvx \right] - \expectation\limits_{\rvpi}\left[ \rvr \cdot \rvx \right] \cdot \expectation\limits_{\rvpi}\left[ \rvx \right] - \expectation\limits_{\rvpi}\left[ \rvr \cdot \rvx \right] \cdot \expectation\limits_{\rvpi}\left[ \rvx \right] + \expectation\limits_{\rvpi}\left[ \rvr \right] \cdot \left( \expectation\limits_{\rvpi}\left[ \rvx \right] \right)^2 \\
-    &\le \left\| \rvpi \right\|_2 \cdot \left\| \rvr \cdot \rvx \cdot \rvx \right\|_2 + 2 \cdot \left\| \rvpi \right\|_2 \cdot \left\| \rvr \cdot \rvx \right\|_2 \cdot \left\| \rvpi \right\|_2 \cdot \left\| \rvx \right\|_2 + \left\| \rvpi \right\|_2^2 \cdot \left\| \rvr \cdot \rvx \right\|_2^2 \\
-    &\le \left\| \rvr \cdot \rvx \cdot \rvx \right\|_2 + 2 \cdot \left\| \rvr \cdot \rvx \right\|_2 \cdot \left\| \rvx \right\|_2 + \left\| \rvr \cdot \rvx \right\|_2^2 \\
-    &\le \left\| \rvx \cdot \rvx \right\|_2 + 2 \cdot \left\| \rvx \right\|_2^2 + \left\| \rvx \right\|_2^2 \\
-    &\le 4 \cdot \left\| \rvx \right\|_2^2. \qedhere
+    &\le \| \rvpi \| \cdot \| \rvr \cdot \rvx \cdot \rvx \| + 2 \cdot \| \rvpi \| \cdot \| \rvr \cdot \rvx \| \cdot \| \rvpi \| \cdot \| \rvx \| + \| \rvpi \|^2 \cdot \| \rvr \cdot \rvx \|^2 \\
+    &\le \| \rvr \cdot \rvx \cdot \rvx \| + 2 \cdot \| \rvr \cdot \rvx \| \cdot \| \rvx \| + \| \rvr \cdot \rvx \|^2 \\
+    &\le \| \rvx \cdot \rvx \| + 2 \cdot \| \rvx \|^2 + \| \rvx \|^2 \\
+    &\le 4 \cdot \| \rvx \|^2. \qedhere
 \end{split}
 \end{equation*}
 \end{proof}
@@ -311,33 +307,33 @@ For any vector $\rvx \in \sR^h$,
 	Define the pseudo policy gradient at step $t$ as,
 \begin{equation*}
 \begin{split}
-	\frac{d \tilde{\ell}_t}{d \rmW_t} \triangleq \tilde{\rmD} \rmA^\top \rmH\left( \rvpi\left(\rmW_t\right) \right) \hat{\rvr}_t \rvs^\top,
+	\frac{d \tilde{\ell}_t}{d \rmW_t} \coloneqq \tilde{\rmD} \rmA^\top \rmH( \rvpi_t ) \hat{\rvr}_t \rvs^\top,
 \end{split}
 \end{equation*}
-where $\tilde{\rmD} \in \sR^{h \times h}$ is a diagonal matrix, and  $\tilde{\rmD}_{r,r} \triangleq \sI\left\{ \rvw_r(0)^\top \rvs > 0 \right\}$, $\forall r \in [m]$. $\rmH\left( \rvpi\left(\rmW_t\right) \right)$ is,
+where $\tilde{\rmD} \in \sR^{K \times K}$ is a diagonal matrix, and  $\tilde{\rmD}_{r,r} \triangleq \sI\{ \rvw_r(0)^\top \rvs > 0 \}$, $\forall r \in [m]$. $\rmH( \rvpi_t )$ is,
 \begin{equation*}
-    \rmH\left( \rvpi\left(\rmW_t\right) \right) \triangleq \Delta\left( \rvpi\left(\rmW_t\right) \right) - \rvpi\left(\rmW_t\right) \rvpi\left(\rmW_t\right)^\top.
+    \rmH( \rvpi_t ) \coloneqq \Delta( \rvpi_t ) - \rvpi_t \rvpi_t^\top.
 \end{equation*}
 The true policy gradient is,
 \begin{equation*}
 \begin{split}
-    \frac{d \rvpi\left(\rmW_t\right)^\top \hat{\rvr}_t}{d \rmW_t} \triangleq  \rmD(t) \rmA^\top \rmH\left( \rvpi\left(\rmW_t\right) \right) \hat{\rvr}_t \rvs^\top.
+    \frac{d \rvpi_t^\top \hat{\rvr}_t}{d \rmW_t} \coloneqq  \rmD(t) \rmA^\top \rmH( \rvpi_t ) \hat{\rvr}_t \rvs^\top.
 \end{split}
 \end{equation*}
-where $\rmD_{r,r}(t) \triangleq \sI\left\{ \rvw_r(t)^\top \rvs > 0 \right\}$, $\forall r \in [m]$. $\forall \tau > 0$, $\forall r \in [m]$, with probability at least $1 - \frac{\sqrt{2}\tau}{\sqrt{\pi}\sigma}$, $\forall t \le \frac{\tau}{ 2 \eta }$,
+where $\rmD_{r,r}(t) \coloneqq \sI\{ \rvw_r(t)^\top \rvs > 0 \}$, $\forall r \in [m]$. $\forall \tau > 0$, $\forall r \in [m]$, with probability at least $1 - \frac{\sqrt{2}\tau}{\sqrt{\pi}\sigma}$, $\forall t \le \frac{\tau}{ 2 \eta }$,
 \begin{equation*}
-	\frac{d\tilde{\ell}_t}{d \rvw_r(t)} = \frac{d \rvpi\left(\rmW_t\right)^\top \hat{\rvr}_t}{d \rvw_r(t)},
+	\frac{d\tilde{\ell}_t}{d \rvw_r(t)} = \frac{d \rvpi_t^\top \hat{\rvr}_t}{d \rvw_r(t)},
 \end{equation*}
 where $\rvw_r(t)$ is the $r$th row vector of $\rmW_t$.
 \end{lem}
 \begin{proof}
 The $r$th row of the pseudo policy gradient as,
 \begin{equation*}
-	\frac{d \tilde{\ell}_t}{d \rvw_r(t)} \triangleq \sum\limits_{k=1}^{h}{ \left[ \hat{r}_{t}(k) \cdot \pi_{t}(k) \cdot \left( \sum\limits_{k^\prime \not= k}^{h}{ \pi_{t}\left(k^\prime\right) \cdot \left( a_{k,r} - a_{k^\prime,r} \right)  } \right) \cdot \sI\left\{ \rvw_r(0)^\top \rvs > 0 \right\} \cdot \rvs \right] },
+	\frac{d \tilde{\ell}_t}{d \rvw_r(t)} \coloneqq \sum\limits_{k=1}^{K}{ \left[ \hat{r}_{t}(k) \cdot \pi_{t}(k) \cdot \left( \sum\limits_{k^\prime \not= k}^{K}{ \pi_{t}\left(k^\prime\right) \cdot \left( a_{k,r} - a_{k^\prime,r} \right)  } \right) \cdot \sI\{ \rvw_r(0)^\top \rvs > 0 \} \cdot \rvs \right] },
 \end{equation*}
 While the $r$th row of the true policy gradient is,
 \begin{equation*}
-	\frac{d \rvpi\left( \rmW_t \right)^\top \hat{\rvr}_t}{d \rvw_r(t)} = \sum\limits_{k=1}^{h}{ \left[\hat{r}_{t}(k) \cdot \pi_{t}(k) \cdot \left( \sum\limits_{k^\prime \not= k}^{h}{ \pi_{t}\left(k^\prime\right) \cdot \left( a_{k,r} - a_{k^\prime,r} \right)  } \right) \cdot \sI\left\{ \rvw_r(t)^\top \rvs > 0 \right\} \cdot \rvs \right] }.
+	\frac{d \rvpi_t^\top \hat{\rvr}_t}{d \rvw_r(t)} = \sum\limits_{k=1}^{K}{ \left[\hat{r}_{t}(k) \cdot \pi_{t}(k) \cdot \left( \sum\limits_{k^\prime \not= k}^{K}{ \pi_{t}\left(k^\prime\right) \cdot \left( a_{k,r} - a_{k^\prime,r} \right)  } \right) \cdot \sI\{ \rvw_r(t)^\top \rvs > 0 \} \cdot \rvs \right] }.
 \end{equation*}
 The true policy gradient norm is upper bounded by the empirically expected reward,
 \begin{equation*}
@@ -378,6 +374,8 @@ which implies if $\left| \rvw_r(0)^\top \rvs \right| > \tau$, then,
 \end{split}
 \end{equation*}
 \end{proof}
+
+=======================updated
 
 \cref{lem:gradient_coupling} implies that for bounded numbers of policy gradient updates, the signs of the ReLUs will not change, i.e., $\sI\left\{ \rvw_r(t)^\top \rvs > 0 \right\} = \sI\left\{ \rvw_r(0)^\top \rvs > 0 \right\}$. Combine \cref{lem:logit_smoothness} with \cref{lem:gradient_coupling}, we have the smoothness property of the surrogate expected loss in the parameter space.
 \begin{lem}
