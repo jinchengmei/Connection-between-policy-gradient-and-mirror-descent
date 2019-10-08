@@ -4,12 +4,12 @@ Online learning aims to learn changing objectives. We present general results fo
 
 \begin{asmp}[Bounded and smooth]
 \label{asmp:boundedness_smoothness}
-$\left| f_t\left(\rvx\right) \right| \le 1$, $\left\| \nabla f_t(\rvx ) - \nabla f_t(\rvy) \right\| \le L $, $\forall \rvx, \rvy$, $\forall t$.
+$\left| f_t(\rvx) \right| \le 1$, $\left\| \nabla f_t(\rvx ) - \nabla f_t(\rvy) \right\| \le L $, $\forall \rvx, \rvy$, $\forall t$.
 \end{asmp}
 
 \begin{asmp}[Gradient dominant]
 \label{asmp:gradient_dominant}
-$\left\| \nabla f_t\left(\rvx\right) \right\| \ge G \left[ f_t\left(\rvx\right) - \min_{\rvw}{ f_t\left(\rvw \right)} \right]$, $\forall \rvx$, $\forall t$.
+$\left\| \nabla f_t(\rvx) \right\| \ge G \left[ f_t(\rvx) - \min_{\rvw}{ f_t(\rvw )} \right]$, $\forall \rvx$, $\forall t$.
 \end{asmp}
 
 \begin{defi}[Functional variation \citep{besbes2015non}]
@@ -19,11 +19,11 @@ $V_{T}^{f} \coloneqq \sum_{t=0}^{T-1}{\max\limits_{\rvw}{\left| f_{t+1}(\rvw) - 
 
 \begin{thm}
 \label{thm:online_learning_regret}
-Given a sequence of functions $\left\{ f_t : t = 0, 1, 2, \dots, T-1 \right\}$ satisfying \cref{asmp:boundedness_smoothness} and \cref{asmp:gradient_dominant}. Online gradient update $\rvx_{t+1} \gets \rvx_{t} - \eta \nabla f_{t}\left(\rvx_{t}\right)$ with $\eta = 1/L$ satisfies,
+Given a sequence of functions $\left\{ f_t : t = 0, 1, 2, \dots, T-1 \right\}$ satisfying \cref{asmp:boundedness_smoothness} and \cref{asmp:gradient_dominant}. Online gradient update $\rvx_{t+1} \gets \rvx_{t} - \eta \nabla f_{t}(\rvx_{t})$ with $\eta = 1/L$ satisfies,
 \begin{equation}
 \label{eq:online_learning_regret}
 \begin{split}
-    \sum\limits_{t=0}^{T-1}{\left[ f_t\left(\rvx_t\right) - f_t\left( \rvx_t^* \right) \right]} \le \frac{2}{G} \sqrt{L T \left( 1 + V_T^f \right)},
+    \sum\limits_{t=0}^{T-1}{\left[ f_t(\rvx_t) - f_t( \rvx_t^*) \right]} \le \frac{2}{G} \sqrt{L T ( 1 + V_T^f )},
 \end{split}
 \end{equation}
 where $\rvx_t^* \coloneqq \argmin_{\rvw}{f_t(\rvw)}$, $\forall t$.
