@@ -1,4 +1,5 @@
 \section{Online Learning with Non-Convex Objectives and Dynamic Regret}
+\label{sec:online_learning}
 
 Online learning has been well studied through online convex optimization \citep{shalev2012online}. We consider different assumptions of non-convex, smooth, gradient dominant functions, which are suitable for our problems and algorithms.
 
@@ -31,6 +32,6 @@ For any sequence of functions $\left\{ f_t : t = 0, 1, \dots, T \right\}$ that s
 where $\rvx_t^* \coloneqq \argmin_{\rvw}{f_t(\rvw)}$, $\forall t$.
 \end{thm}
 
-\cref{thm:online_learning_regret} is novel and meaningful as, (1) instead of comparing with best in hindsight $\min_{\rvw}{\sum_{t=0}^{T-1}{f_t(\rvw)} }$, we consider changing optimal decision $f_t\left( \rvx_t^* \right)$, which is more difficult to upper bound; (2) unlike most existing work, here $f_t$ is not assumed to be convex \citep{yang2016tracking} or quasi-convex \citep{gao2018online}; (3) we analyze practical gradient update, rather than oracle based methods \citep{suggala2019online,agarwal2019learning} ; (4) our assumptions are satisfied by randomly initialized NNs, as justified later in next section.
+\cref{thm:online_learning_regret} is novel and meaningful as, (1) instead of comparing with best fixed decision in hindsight $\min_{\rvw}{\sum_{t=0}^{T-1}{f_t(\rvw)} }$, we consider changing optimal solutions $f_t\left( \rvx_t^* \right)$, which is more difficult to upper bound; (2) unlike most existing work, here $f_t$ is not assumed to be convex \citep{yang2016tracking} or quasi-convex \citep{gao2018online}; (3) we analyze practical gradient update, rather than oracle based methods \citep{suggala2019online,agarwal2019learning} ; (4) our assumptions are satisfied by randomly initialized NNs \citep{li2018learning,allen2018convergenceB}.
 
 To obtain sub-linear regret in \cref{eq:online_learning_regret}, it is sufficient to control the functional variation $V_T^f$ to be sub-linear $o(T)$. However, $V_T^f$ is usually linear $O(T)$ in practice. For example, in stochastic MAB, if we take sampled reward as learning signal, then at each step signal is changing in order $O(1)$ according to random sampling. As a result, $V_T^f$ will be $O(T)$. Therefore, we use empirical mean estimation and exploration to control $V_T^f$.
