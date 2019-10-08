@@ -338,39 +338,39 @@ While the $r$th row of the true policy gradient is,
 The true policy gradient norm is upper bounded by the empirically expected reward,
 \begin{equation*}
 \begin{split}
-	\left\| \frac{d \rvpi\left( \rmW_t \right)^\top \hat{\rvr}_t}{d \rvw_r(t)} \right\|_2 &\le \sum\limits_{k=1}^{h}{ \left|\hat{r}_{t}(k) \cdot \pi_{t}(k) \cdot \sum\limits_{k^\prime \not= k}^{h}{ \pi_{t}\left(k^\prime\right) \cdot \left( a_{k,r} - a_{k^\prime,r} \right)  } \cdot \sI\left\{ \rvw_r(t)^\top \rvs > 0 \right\} \right| \cdot \left\| \rvs \right\|_2 } \\
-	&\le 2 \cdot \sum\limits_{k=1}^{h}{\hat{r}_{t}(k) \cdot \pi_{t}(k) \cdot \sum\limits_{k^\prime \not= k}^{h}{ \pi_{t}\left(k^\prime\right)  } \cdot \left\| \rvs \right\|_2  } \\
-	&\le 2 \cdot \rvpi\left(\rmW_t\right)^\top \hat{\rvr}_t.
+	\left\| \frac{d \rvpi_t^\top \hat{\rvr}_t}{d \rvw_r(t)} \right\|_2 &\le \sum\limits_{k=1}^{K}{ \left|\hat{r}_{t}(k) \cdot \pi_{t}(k) \cdot \sum\limits_{k^\prime \not= k}^{K}{ \pi_{t}(k^\prime) \cdot ( a_{k,r} - a_{k^\prime,r} )  } \cdot \sI\{ \rvw_r(t)^\top \rvs > 0 \} \right| \cdot \| \rvs \| } \\
+	&\le 2 \cdot \sum\limits_{k=1}^{K}{\hat{r}_{t}(k) \cdot \pi_{t}(k) \cdot \sum\limits_{k^\prime \not= k}^{K}{ \pi_{t}(k^\prime)  } \cdot \| \rvs \|  } \\
+	&\le 2 \cdot \rvpi_t^\top \hat{\rvr}_t.
 \end{split}
 \end{equation*}
 After $t$ times of gradient updates, the distance between $\rvw_r(t)$ and $\rvw_r(0)$ is also upper bounded,
 \begin{equation*}
 \begin{split}
-	\left\| \rvw_r(t) - \rvw_r(0) \right\|_2 &\le \eta \cdot \sum\limits_{s=0}^{t-1}{\left\| \frac{d \rvpi\left( \rmW_s \right)^\top \hat{\rvr}_s}{d \rvw_r(s)} \right\|_2} \\
-	&\le 2 \eta \cdot \sum\limits_{s=0}^{t-1}{ \rvpi\left(\rmW_s\right)^\top \hat{\rvr}_s } \\
+	\| \rvw_r(t) - \rvw_r(0) \| &\le \eta \cdot \sum\limits_{s=0}^{t-1}{\left\| \frac{d \rvpi_s^\top \hat{\rvr}_s}{d \rvw_r(s)} \right\|} \\
+	&\le 2 \eta \cdot \sum\limits_{s=0}^{t-1}{ \rvpi_s^\top \hat{\rvr}_s } \\
 	&\le 2 \eta t .
 \end{split}
 \end{equation*}
-Since $\rvw_r(0)^\top \rvs \sim \gN(0, \sigma^2)$, $\probability\left\{ \left| \rvw_r(0)^\top \rvs \right| \le \tau\right\} \le  \frac{\sqrt{2}\tau}{\sqrt{\pi}\sigma}$,
+Since $\rvw_r(0)^\top \rvs \sim \gN(0, \sigma^2)$, $\probability\left\{ | \rvw_r(0)^\top \rvs | \le \tau\right\} \le \frac{\sqrt{2}\tau}{\sqrt{\pi}\sigma}$,
 \begin{equation*}
 \begin{split}
-	\probability\left\{ \left| \rvw_r(0)^\top \rvs \right| > \tau\right\} &= 1 - \probability\left\{ \left| \rvw_r(0)^\top \rvs \right| \le \tau\right\} \\
+	\probability\left\{ | \rvw_r(0)^\top \rvs | > \tau\right\} &= 1 - \probability\left\{ | \rvw_r(0)^\top \rvs | \le \tau\right\} \\
 	&\ge 1 - \frac{\sqrt{2}\tau}{\sqrt{\pi}\sigma}.
 \end{split}
 \end{equation*}
-Conditioning on the above event happens, i.e., $ \left| \rvw_r(0)^\top \rvs \right| > \tau$, let $t \le \frac{\tau}{ 2 \eta }$,
+Conditioning on the above event happens, i.e., $| \rvw_r(0)^\top \rvs | > \tau$, let $t \le \frac{\tau}{ 2 \eta }$,
 \begin{equation*}
 \begin{split}
-	\left| \left( \rvw_r(t) - \rvw_r(0) \right)^\top \rvs \right| &\le \left\| \rvw_r(t) - \rvw_r(0) \right\|_2 \cdot \left\| \rvs \right\|_2 \\
+	| ( \rvw_r(t) - \rvw_r(0) )^\top \rvs | &\le \| \rvw_r(t) - \rvw_r(0) \| \cdot \| \rvs \| \\
 	&\le 2 \eta t \\
-	&\le \tau < \left| \rvw_r(0)^\top \rvs \right|,
+	&\le \tau < | \rvw_r(0)^\top \rvs |,
 \end{split}
 \end{equation*}
-which implies if $\left| \rvw_r(0)^\top \rvs \right| > \tau$, then,
+which implies if $| \rvw_r(0)^\top \rvs | > \tau$, then,
 \begin{equation*}
 \begin{split}
-	\sI\left\{ \rvw_r(t)^\top \rvs > 0 \right\} &= \sI\left\{ \rvw_r(0)^\top \rvs  + \left( \rvw_r(t) - \rvw_r(0) \right)^\top \rvs > 0 \right\} \\
-	&= \sI\left\{ \rvw_r(0)^\top \rvs > 0 \right\}. \qedhere
+	\sI\{ \rvw_r(t)^\top \rvs > 0 \} &= \sI\{ \rvw_r(0)^\top \rvs  + ( \rvw_r(t) - \rvw_r(0) )^\top \rvs > 0 \} \\
+	&= \sI\{ \rvw_r(0)^\top \rvs > 0 \}. \qedhere
 \end{split}
 \end{equation*}
 \end{proof}
