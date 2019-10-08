@@ -23,20 +23,13 @@ decays as $t$ increases, which leads to $V_T^r \in O(\log{T})$. This simple intu
    \FOR{$t=0$ {\bfseries to} $T-1$}
    \STATE Sample $A_{t} \sim \tilde{\rvpi}_{t}(\cdot | \rvs )$. Take $A_{t}$. Get reward $R_{t}$.
    \STATE $\rmW_{t+1} \leftarrow \rmW_t + \eta \cdot \frac{d \{ \rvpi_t^\top \hat{\rvr}_t \} }{d \rmW_t}$.
-   \STATE $\left. 
+   \STATE $\scalemath{0.8}{ \left. 
 		\begin{cases}
-		n_{t+1}(k) \gets  n_{t}(k) + 1, & \text{if } k = A_t, \\
-		n_{t+1}(k) \gets n_{t}(k), & \text{otherwise}.
+		n_{t+1}(k) \gets  n_{t}(k) + 1, \ \hat{r}_{t+1}(k) \gets \frac{n_{t}(k) \cdot \hat{r}_{t}(k) + R_{t} }{n_{t+1}(k)},  & \text{if } k = A_t, \\
+		n_{t+1}(k) \gets n_{t}(k), \ \hat{r}_{t+1}(k) \gets \hat{r}_{t}(k),  & \text{otherwise}.
 		\end{cases}
-		\right. \qquad$ 
-   $\left. 
-		\begin{cases}
-		\hat{r}_{t+1}(k) \gets \frac{n_{t}(k) \cdot \hat{r}_{t}(k) + R_{t} }{n_{t+1}(k)}, & \text{if } k = A_t, \\
-		\hat{r}_{t+1}(k) \gets \hat{r}_{t}(k), & \text{otherwise}.
-		\end{cases}
-		\right.$
-		\STATE $\alpha_{t+1} \gets (t+1)^{ \beta - \frac{1}{3}}$.
-   \STATE $\tilde{\pi}_{t+1}(k) \gets ( 1 - \alpha_{t+1} ) \cdot  \pi_{t+1}(k) + \alpha_{t+1} \cdot \frac{1}{K}$, $\forall k \in [K]$.
+		\right.}$ 
+   \STATE $\scalemath{0.75}{ \tilde{\pi}_{t+1}(k) \gets \left[ 1 - (t+1)^{ \beta - \frac{1}{3} } \right] \cdot  \pi_{t+1}(k) + (t+1)^{ \beta - \frac{1}{3} }  \cdot \frac{1}{K}, \ \forall k \in [K] }$.
    \ENDFOR
 \end{algorithmic}
 \end{algorithm}
@@ -67,7 +60,7 @@ where the exploration cost is by $\alpha_{t+1} = \left(t+1\right)^{ \beta - \fra
 The NN regret can also be decomposed as
 \begin{equation}
 \label{eq:playing_learning_phase_regret_decomposition}
-\scalemath{0.75}{
+\scalemath{0.78}{
 \begin{split}
 \sum\limits_{t=1}^{T-1}{ ( {\rvpi^*} - \rvpi_t )^\top \rvr}  &= \sum\limits_{t=1}^{T-1}{ ( {\rvpi^*} - \rvpi_t )^\top \hat{\rvr}_t } + \sum\limits_{t=1}^{T-1}{ ( {\rvpi^*} - \rvpi_t )^\top ( \rvr - \hat{\rvr}_t ) }\\
 &\le \sum\limits_{t=1}^{T-1}{ ( {\rvpi_t^*} - \rvpi_t )^\top \hat{\rvr}_t  } + 2 \sum\limits_{t=1}^{T-1}{ \left\| \rvr - \hat{\rvr}_t \right\|_\infty } \\
@@ -85,7 +78,7 @@ where $\rvpi_t^* \coloneqq \argmax_{\rvpi }{\{ \rvpi^\top \hat{\rvr}_t\}}$. The 
 with probability at least $1 - \frac{16 K}{T^2}$.
 The regret bound follows by combining \cref{eq:total_regret_decomposition}, \cref{eq:playing_learning_phase_regret_decomposition}, and \cref{step:proof1step1}.
 \end{proof}
-The dynamic regret upper bound of online neural network learning \cref{step:proof1step1} contributes to the main component of the proof for \cref{thm:policy_gradient_main_result}. 
+The dynamic regret upper bound of online neural network learning \cref{step:proof1step1} contributes to the main component of the proof for \cref{thm:policy_gradient_main_result}.
 
 
 	Our proof borrows some technical ideas from \cite{li2018learning,allen2018convergenceB},  where optimization theory of over-parametrized neural networks is developed for the supervised learning. To adapt these techniques for the reinforcement learning setting, many challenges still remain. One particular challenge is that the learning objective depends on $\hat{\rvr}_t$ that is dynamic. Another challenge is that all the actions need sufficient exploration, so that the learning signal from $\hat{\rvr}_t$ is aligned with the true expected reward. Again, to overcome these two challenge, \cref{alg:policy_gradient_uniform_exploration} needs to assign a large portion of budget for exploration.
