@@ -2,50 +2,58 @@
 
 \subsection{Proof for \cref{thm:online_learning_regret}}
 
-\textbf{\cref{thm:online_learning_regret}.} Given functions $\left\{ f_t : t = 1, 2, \dots, T \right\}$ satisfying \cref{asmp:boundedness_smoothness} and \cref{asmp:gradient_dominant}, 
- Then the regret of the  online gradient descent satisfies,
+\textbf{\cref{thm:online_learning_regret}.} Given a sequence of functions $\left\{ f_t : t = 0, 1, 2, \dots, T-1 \right\}$ satisfying \cref{asmp:boundedness_smoothness} and \cref{asmp:gradient_dominant}. Online gradient update $\rvx_{t+1} \gets \rvx_{t} - \eta \nabla f_{t}\left(\rvx_{t}\right)$ with $\eta = 1/L$ satisfies,
 \begin{equation*}
 \begin{split}
-    \sum\limits_{t=0}^{T-1}{\left[ f_t\left(\rvx_t\right) - f_t\left( \rvx_* \right) \right]} \le 2 \sqrt{ab} \cdot T^{\frac{3}{4}}.
+    \sum\limits_{t=0}^{T-1}{\left[ f_t\left(\rvx_t\right) - f_t\left( \rvx_t^* \right) \right]} \le 2 \sqrt{L T \left( 1 + V_T^f \right)}.
 \end{split}
 \end{equation*}
 \begin{proof}
-First, note that smoothness in \cref{asmp:boundedness_smoothness} is equivalent with
+First, note that $\left\| \nabla f_t(\rvx ) - \nabla f_t(\rvy) \right\| \le L $ in \cref{asmp:boundedness_smoothness} is equivalent with
 \begin{equation*}
 \begin{split}
-    f_t\left(\rvx^\prime\right) \le f_t\left(\rvx\right) + \left\langle \nabla f_t\left(\rvx^\prime\right) , \rvx^\prime - \rvx \right\rangle +  \frac{b}{2} \left\| \rvx^\prime - \rvx \right\|_2^2.
+    f_t\left(\rvx^\prime\right) \le f_t\left(\rvx\right) + \left\langle \nabla f_t\left(\rvx\right) , \rvx^\prime - \rvx \right\rangle +  \frac{L}{2} \left\| \rvx^\prime - \rvx \right\|^2, \forall \rvx, \rvx^\prime.
 \end{split}
 \end{equation*}
-. Denote $\delta_t \triangleq f_t\left(\rvx_t\right) - f_t\left( \rvx_* \right)$.
+Let $\rvx^\prime = \rvx_{t+1}$, $\rvx = \rvx_{t}$, and using $\eta = 1/L$,
+\begin{equation}
+\label{eq:f_t_progress}
+\begin{split}
+    f_t\left(\rvx_{t+1}\right) &\le f_t\left(\rvx_{t}\right) + \left\langle \nabla f_t\left(\rvx_t\right) , - \eta \nabla f_t\left(\rvx_t\right) \right\rangle +  \frac{L \eta^2}{2} \left\| \nabla f_t\left(\rvx_t\right) \right\|^2 \\
+    &= f_t\left(\rvx_{t}\right) - \frac{1}{2 L} \left\| \nabla f_t\left(\rvx_t\right) \right\|^2 \\
+    &\le f_t\left(\rvx_{t}\right) - \frac{1}{2 L} \left[ f_t\left(\rvx_t\right) - f_t\left(\rvx_t^*\right) \right]^2,
+\end{split}
+\end{equation}
+where the last inequality is according to \cref{asmp:gradient_dominant}. Denote $\delta_t \coloneqq f_t\left(\rvx_t\right) - f_t\left( \rvx_t^* \right)$, $\forall t$.
 \begin{equation*}
 \begin{split}
-    \delta_t &= f_t\left(\rvx_t\right) - f_{t-1}\left(\rvx_t\right) + f_{t-1}\left(\rvx_t\right) - f_{t-1}\left(\rvx_{t-1}\right) + f_{t-1}\left(\rvx_{t-1}\right) - f_{t-1}\left( \rvx_* \right) + f_{t-1}\left( \rvx_* \right) -  f_t\left( \rvx_* \right) \\
-    &\le \frac{a}{\sqrt{t}} + \left\langle \nabla f_{t-1}\left(\rvx_{t-1}\right),  \rvx_t - \rvx_{t-1} \right\rangle + \frac{b}{2}\left\| \rvx_t - \rvx_{t-1} \right\|_2^2 + \delta_{t-1} + \frac{a}{\sqrt{t}} \\
-    &= \frac{2a}{\sqrt{t}} - \eta \left\| \nabla f_{t-1}\left(\rvx_{t-1}\right) \right\|_2^2 + \frac{b \eta^2}{2} \left\| \nabla f_{t-1}\left(\rvx_{t-1}\right)  \right\|_2^2 + \delta_{t-1} \\
-    &= \frac{2a}{\sqrt{t}} - \frac{1}{2b} \left\| \nabla f_{t-1}\left(\rvx_{t-1}\right) \right\|_2^2 + \delta_{t-1} \\
-    &\le \delta_{t-1} - \frac{1}{2b} \cdot \delta_{t-1}^2 + \frac{2a}{\sqrt{t}}.
+    \delta_t &= f_t\left(\rvx_t\right) - f_{t-1}\left(\rvx_t\right) + f_{t-1}\left(\rvx_t\right) - f_t\left( \rvx_t^* \right) \\
+    &\le \max\limits_{\rvw}{\left| f_{t}(\rvw) - f_{t-1}(\rvw) \right| } + f_{t-1}\left(\rvx_t\right) - f_t\left( \rvx_t^* \right) \\
+    &= \max\limits_{\rvw}{\left| f_{t}(\rvw) - f_{t-1}(\rvw) \right| } + f_{t-1}\left(\rvx_t\right) - f_{t-1}\left(\rvx_{t-1}\right) + f_{t-1}\left(\rvx_{t-1}\right) - f_t\left( \rvx_t^* \right) \\
+    &\le \max\limits_{\rvw}{\left| f_{t}(\rvw) - f_{t-1}(\rvw) \right| } - \frac{\delta_{t-1}^2}{2L} + f_{t-1}\left(\rvx_{t-1}\right) - f_t\left( \rvx_t^* \right) \qquad \left( \text{by \cref{eq:f_t_progress}} \right) \\
+    &=  \max\limits_{\rvw}{\left| f_{t}(\rvw) - f_{t-1}(\rvw) \right| } - \frac{\delta_{t-1}^2}{2L} + f_{t-1}\left(\rvx_{t-1}\right) - f_{t-1}\left(\rvx_{t-1}^*\right) + f_{t-1}\left(\rvx_{t-1}^*\right) - f_t\left( \rvx_t^* \right) \\
+    &= \max\limits_{\rvw}{\left| f_{t}(\rvw) - f_{t-1}(\rvw) \right| } - \frac{\delta_{t-1}^2}{2L} + \delta_{t-1} + f_{t-1}\left(\rvx_{t-1}^*\right) - f_t\left( \rvx_t^* \right) \\
+    &= \max\limits_{\rvw}{\left| f_{t}(\rvw) - f_{t-1}(\rvw) \right| } - \frac{\delta_{t-1}^2}{2L} + \delta_{t-1} + f_{t-1}\left(\rvx_{t-1}^*\right) - f_{t-1}\left(\rvx_{t}^*\right) + f_{t-1}\left(\rvx_{t}^*\right) - f_t\left( \rvx_t^* \right) \\
+    &\le \max\limits_{\rvw}{\left| f_{t}(\rvw) - f_{t-1}(\rvw) \right| } - \frac{\delta_{t-1}^2}{2L} + \delta_{t-1} + f_{t-1}\left(\rvx_{t}^*\right) - f_t\left( \rvx_t^* \right) \qquad \left(f_{t-1}\left(\rvx_{t-1}^*\right) \coloneqq \min\limits_{\rvw}{f_{t-1}(\rvw)} \le f_{t-1}(\rvx_t^*) \right) \\
+    &\le \max\limits_{\rvw}{\left| f_{t}(\rvw) - f_{t-1}(\rvw) \right| } - \frac{\delta_{t-1}^2}{2L} + \delta_{t-1} + \max\limits_{\rvw}{\left| f_{t}(\rvw) - f_{t-1}(\rvw) \right| } \\
+    &= - \frac{\delta_{t-1}^2}{2L} + \delta_{t-1} + 2 \max\limits_{\rvw}{\left| f_{t}(\rvw) - f_{t-1}(\rvw) \right| }.
 \end{split}
 \end{equation*}
 Rearranging and summing up from $1$ to $T$,
-\begin{equation*}
+\begin{equation}
+\label{eq:delta_t_upper_bound}
 \begin{split}
-    \frac{1}{2b} \cdot \sum\limits_{t=1}^{T}{ \delta_{t-1}^2} &\le \sum\limits_{t=1}^{T}{\left[ \delta_{t-1} - \delta_{t} + f_t\left(\rvx_t\right) - f_{t-1}\left(\rvx_t\right) + f_{t-1}\left( \rvx_* \right) -  f_t\left( \rvx_* \right) \right] } \\
-    &= \delta_0 - \delta_{T} + f_0\left( \rvx_* \right) - f_{T}\left( \rvx_* \right) + \sum\limits_{t=1}^{T}{ \left[ f_t\left(\rvx_t\right) - f_{t-1}\left(\rvx_t\right) \right] } \\
-    &\le 6 + a \sqrt{T}.
+    \frac{1}{2L} \cdot \sum\limits_{t=1}^{T}{ \delta_{t-1}^2} &\le \sum\limits_{t=1}^{T}{\left[ \delta_{t-1} - \delta_{t} + 2 \max\limits_{\rvw}{\left| f_{t}(\rvw) - f_{t-1}(\rvw) \right|} \right] } \\
+    &= \sum\limits_{t=1}^{T}{ \left[ \delta_{t-1} - \delta_{t} \right] } + 2 \sum\limits_{t=0}^{T-1}{ \max\limits_{\rvw}{\left| f_{t+1}(\rvw) - f_{t}(\rvw) \right| } } \\
+    &= \delta_0 - \delta_{T} + 2 V_T^f \qquad \left( \text{\cref{defi:function_variation}} \right) \\
+    &\le 2 + 2 V_T^f \qquad \left(\text{\cref{asmp:boundedness_smoothness}}\right).
 \end{split}
-\end{equation*}
-By the the Root-Mean Square-Arithmetic Mean inequality,
+\end{equation}
+According to the Root-Mean Square-Arithmetic Mean inequality, the regret is upper bounded as
 \begin{equation*}
 \begin{split}
-    \frac{\sum\limits_{t=1}^{T}{ \delta_{t-1}}}{T} \le \sqrt{\frac{\sum\limits_{t=1}^{T}{ \delta_{t-1}^2}}{T}},
-\end{split}
-\end{equation*}
-the regret is upper bounded by,
-\begin{equation*}
-\begin{split}
-    \sum\limits_{t=1}^{T}{ \delta_{t-1}} &\le \sqrt{ T \cdot \sum\limits_{t=1}^{T}{ \delta_{t-1}^2} } \\
-    &\le \sqrt{ T \cdot 2b \cdot \left( 6 + a \sqrt{T} \right) } \\
-    &\le 2 \sqrt{ab} \cdot T^{\frac{3}{4}}. \qedhere
+    \sum\limits_{t=0}^{T-1}{\left[ f_t\left(\rvx_t\right) - f_t\left( \rvx_t^* \right) \right]} = \sum\limits_{t=1}^{T}{ \delta_{t-1}} &\le \sqrt{T \sum\limits_{t=1}^{T}{ \delta_{t-1}^2}} \\
+    &\le 2 \sqrt{L T \left( 1 + V_T^f \right)}. \qquad \left(\text{by \cref{eq:delta_t_upper_bound}}\right) \qedhere
 \end{split}
 \end{equation*}
 \end{proof}

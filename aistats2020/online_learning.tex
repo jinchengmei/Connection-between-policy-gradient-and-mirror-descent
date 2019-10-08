@@ -9,23 +9,24 @@ $\left| f_t\left(\rvx\right) \right| \le 1$, $\left\| \nabla f_t(\rvx ) - \nabla
 
 \begin{asmp}[Gradient dominant]
 \label{asmp:gradient_dominant}
-$\left\| \nabla f_t\left(\rvx\right) \right\| \ge f_t\left(\rvx\right) - f_t\left(\rvx_t^*\right) \coloneqq f_t\left(\rvx\right) - \min_{\rvw}{ f_t\left(\rvw \right)}$, $\forall \rvx$, $\forall t > 0$.
+$\left\| \nabla f_t\left(\rvx\right) \right\| \ge f_t\left(\rvx\right) - f_t\left(\rvx_t^*\right) \coloneqq f_t\left(\rvx\right) - \min_{\rvw}{ f_t\left(\rvw \right)}$, $\forall \rvx$, $\forall t$.
 \end{asmp}
 
 \begin{defi}[Functional variation]
+\label{defi:function_variation}
 \begin{equation*}
 \begin{split}
-    V_{T}^{f} \coloneqq \sum\limits_{t=1}^{T-1}{\max\limits_{\rvw \in \Omega}{\left| f_{t}(\rvw) - f_{t+1}(\rvw) \right| } }.
+    V_{T}^{f} \coloneqq \sum\limits_{t=0}^{T-1}{\max\limits_{\rvw}{\left| f_{t+1}(\rvw) - f_{t}(\rvw) \right| } }.
 \end{split}
 \end{equation*}
 \end{defi}
 
 \begin{thm}
 \label{thm:online_learning_regret}
-Given functions $\left\{ f_t : t = 1, 2, \dots, T \right\}$ satisfying \cref{asmp:boundedness_smoothness} and \cref{asmp:gradient_dominant}. Online gradient update, i.e., $\rvx_{t} \gets \rvx_{t-1} - \eta \nabla f_{t-1}\left(\rvx_{t-1}\right)$, where $\eta = 1/L$ satisfies,
+Given a sequence of functions $\left\{ f_t : t = 0, 1, 2, \dots, T-1 \right\}$ satisfying \cref{asmp:boundedness_smoothness} and \cref{asmp:gradient_dominant}. Online gradient update $\rvx_{t+1} \gets \rvx_{t} - \eta \nabla f_{t}\left(\rvx_{t}\right)$ with $\eta = 1/L$ satisfies,
 \begin{equation*}
 \begin{split}
-    \sum\limits_{t=0}^{T-1}{\left[ f_t\left(\rvx_t\right) - f_t\left( \rvx_t^* \right) \right]} \le 2 \sqrt{ab} \cdot T^{\frac{3}{4}}.
+    \sum\limits_{t=0}^{T-1}{\left[ f_t\left(\rvx_t\right) - f_t\left( \rvx_t^* \right) \right]} \le 2 \sqrt{L T \left( 1 + V_T^f \right)}.
 \end{split}
 \end{equation*}
 \end{thm}
