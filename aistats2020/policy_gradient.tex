@@ -1,16 +1,30 @@
 \section{Empirical Policy Gradient}
 \label{sec:policy_gradient}
 
-Inspired by the intuition of controlling the functional variation $V_T^f$, we propose our first algorithm, Empirical Policy Gradient with Uniform Exploration (PGE), as shown in \cref{alg:policy_gradient_uniform_exploration}. Following widely used policy gradient methods, PGE updates policy neural networks by policy gradient update, but with the empirical reward estimation as its objective. At each step $t$, PGE also has a uniform exploration $t^{ \beta - \frac{1}{3}} \cdot \frac{1}{K}$ for each action, with $\beta > 0$ to be very small.
+\cref{thm:online_learning_regret} shows that the variation of learning objectives matters when gradient based methods are used in online learning. In stochastic bandit settings, to characterize similar issues when different objectives are used for learning, we define a special functional variation, called \textbf{reward signal variation}.
 
-There are two main contrasts between PGE and standard policy gradient methods, i.e., the later use sampled reward as learning objective and have no explicit exploration. Actually, \textbf{empirical mean} and \textbf{exploration} are key points for PGE to control $V_T^f$. To see this, consider a true mean reward scalar $r \in [0, 1]$, and its two observed samples $r_t, r_{t+1} \in [0, 1]$. $\left| r_t - r_{t+1} \right| \in O(1)$ is independent with $t$, and it leads to $V_T^r \in O(T)$. On the other hand, consider empirical mean $\hat{r}_t, \hat{r}_{t+1} \in [0, 1]$, and 
+\begin{defi}[Reward signal variation]
+\label{defi:reward_signal_variation}
+Given a sequence of reward signals $\{ \tilde{\rvr}_t \in [0,1]^K: t = 0, 1, 2, \dots, T-1 \}$, define reward signal variation
+$V_{T}^{\tilde{\rvr}} \coloneqq \sum_{t=0}^{T-1}{\max\limits_{\rvpi \in \Delta}{\left| \rvpi^\top(\tilde{\rvr}_{t+1} - \tilde{\rvr}_{t}) \right| } }.$
+\end{defi}
+
+Using the following example, we show different reward signal has significantly different variations.
+
+\begin{eg}
+Consider a true mean reward scalar $r \in [0, 1]$, and its two observed samples $r_t, r_{t+1} \in [0, 1]$. $\left| r_t - r_{t+1} \right| \in O(1)$ is independent with $t$, and it leads to $V_T^r \in O(T)$. On the other hand, consider empirical mean $\hat{r}_t, \hat{r}_{t+1} \in [0, 1]$, and
 \begin{equation*}
 \begin{split}
 	\left| \hat{r}_{t} - \hat{r}_{t+1} \right| &\coloneqq \left| \frac{1}{t} \sum_{i=1}^{t}{ r_i } - \frac{1}{t+1} \sum_{i=1}^{t+1}{ r_i } \right| \\
 	&= \frac{1}{t+1} \left| \hat{r}_t - r_{t+1} \right| \in O\left(\frac{1}{t}\right)
 \end{split}
 \end{equation*}
-decays as $t$ increases, which leads to $V_T^r \in O(\log{T})$. This simple intuition shows that empirical mean with enough exploration is much more stable than sampled reward, and its functional variation $V_T^r$ can be sub-linear $o(T)$. Based on this idea, PGE achieves $\tilde{O}(T^{2/3})$ regret by balancing exploration, estimation, and online neural network learning, as shown in \cref{thm:policy_gradient_main_result}.
+decays as $t$ increases, which leads to $V_T^{\hat{r}} \in O(\log{T})$.
+\end{eg}
+
+This simple example demonstrates that empirical mean with enough exploration has sub-linear reward signal variation $V_T^{\hat{r}} \in o(T)$, and it is  much more stable than sampled reward. Inspired by this intuition of controlling reward signal variation $V_T^{\tilde{\rvr}}$, we propose our first algorithm, Empirical Policy Gradient with Uniform Exploration (PGE), as shown in \cref{alg:policy_gradient_uniform_exploration}. Following widely used policy gradient methods, PGE updates policy neural networks by policy gradient update, but with empirical reward estimation $\hat{\rvr}_t$ as its objective. At each step $t$, PGE also has a uniform exploration $t^{ \beta - \frac{1}{3}} \cdot \frac{1}{K}$ for each action, with $\beta > 0$ to be very small. There are two main contrasts between PGE and standard policy gradient methods, i.e., the later use sampled reward as learning objective and have no explicit exploration. Actually, empirical mean and exploration are key points for PGE to control $V_T^{\hat{\rvr}}$. 
+ 
+Based on this idea, PGE achieves $\tilde{O}(T^{2/3})$ regret by balancing exploration, estimation, and online neural network learning, as shown in \cref{thm:policy_gradient_main_result}.
 
 \begin{algorithm}[t]
 \caption{Empirical Policy Gradient with Uniform Exploration (PGE)}
@@ -72,13 +86,13 @@ where $\rvpi_t^* \coloneqq \argmax_{\rvpi }{\{ \rvpi^\top \hat{\rvr}_t\}}$. The 
 \begin{equation}
 \label{step:proof1step1}
 \begin{split}
-\sum\limits_{t=1}^{T-1}{ (  {\rvpi_t^*} - \rvpi_t )^\top \hat{\rvr}_t } \le \frac{7 K}{c} \cdot  T^{\frac{2}{3}},
+\sum\limits_{t=1}^{T-1}{ (  {\rvpi_t^*} - \rvpi_t )^\top \hat{\rvr}_t } \le \frac{7 K}{c} \cdot  T^{\frac{2}{3}}
 \end{split}
 \end{equation}
 with probability at least $1 - \frac{16 K}{T^2}$.
 The regret bound follows by combining \cref{eq:total_regret_decomposition}, \cref{eq:playing_learning_phase_regret_decomposition}, and \cref{step:proof1step1}.
 \end{proof}
-The dynamic regret upper bound of online neural network learning \cref{step:proof1step1} contributes to the main component of the proof for \cref{thm:policy_gradient_main_result}.
+The dynamic regret upper bound of online neural network learning \cref{step:proof1step1} is key to the proof for \cref{thm:policy_gradient_main_result}.
 
 ===============updated
 

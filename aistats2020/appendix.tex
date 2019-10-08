@@ -2,12 +2,14 @@
 
 \subsection{Proof for \cref{thm:online_learning_regret}}
 
-\textbf{\cref{thm:online_learning_regret}.} Given a sequence of functions $\left\{ f_t : t = 0, 1, 2, \dots, T-1 \right\}$ satisfying \cref{asmp:boundedness_smoothness} and \cref{asmp:gradient_dominant}. Online gradient update $\rvx_{t+1} \gets \rvx_{t} - \eta \nabla f_{t}(\rvx_{t})$ with $\eta = 1/L$ satisfies,
-\begin{equation*}
+\textbf{\cref{thm:online_learning_regret}.} For any sequence of functions $\left\{ f_t : t = 0, 1, \dots, T \right\}$ that satisfies \cref{asmp:boundedness_smoothness} and \cref{asmp:gradient_dominant}, dynamic regret of online gradient update $\rvx_{t+1} \gets \rvx_{t} - \eta \nabla f_{t}(\rvx_{t})$ with $\eta = 1/L$ satisfies,
+\begin{equation}
+\label{eq:online_learning_regret}
 \begin{split}
-    \sum\limits_{t=0}^{T-1}{\left[ f_t(\rvx_t) - f_t( \rvx_t^* ) \right]} \le \frac{2}{G} \sqrt{L T ( 1 + V_T^f )}.
+    \sum\limits_{t=0}^{T-1}{\left[ f_t(\rvx_t) - f_t( \rvx_t^*) \right]} \le \frac{2}{G} \sqrt{L T ( 1 + V_T^f )},
 \end{split}
-\end{equation*}
+\end{equation}
+where $\rvx_t^* \coloneqq \argmin_{\rvw}{f_t(\rvw)}$, $\forall t$.
 
 \begin{proof}
 First, note that $\left\| \nabla f_t(\rvx ) - \nabla f_t(\rvy) \right\| \le L $ in \cref{asmp:boundedness_smoothness} is equivalent with
