@@ -375,38 +375,37 @@ which implies if $| \rvw_r(0)^\top \rvs | > \tau$, then,
 \end{equation*}
 \end{proof}
 
-=======================updated
-
-\cref{lem:gradient_coupling} implies that for bounded numbers of policy gradient updates, the signs of the ReLUs will not change, i.e., $\sI\left\{ \rvw_r(t)^\top \rvs > 0 \right\} = \sI\left\{ \rvw_r(0)^\top \rvs > 0 \right\}$. Combine \cref{lem:logit_smoothness} with \cref{lem:gradient_coupling}, we have the smoothness property of the surrogate expected loss in the parameter space.
+\cref{lem:gradient_coupling} implies that ReLU signs will not change after finite policy gradient updates, i.e., $\sI\{ \rvw_r(t)^\top \rvs > 0 \} = \sI\{ \rvw_r(0)^\top \rvs > 0 \}$. Combine \cref{lem:logit_smoothness} with \cref{lem:gradient_coupling}, we have smoothness property in parameter space.
 \begin{lem}
 \label{lem:empirically_expected_reward_parameter_smoothness}
-    $\rmW_{t+1} = \rmW_t + \eta \cdot \frac{d \rvpi\left(\rmW_t\right)^\top \hat{\rvr}_t}{d \rmW_t}$. $\forall t \le \frac{\tau}{ 2 \eta }$,
+    $\rmW_{t+1} \gets \rmW_t + \eta \cdot \frac{d \rvpi_t^\top \hat{\rvr}_t}{d \rmW_t}$, with $\eta = \frac{1}{2 K m}$. $\forall t \le \frac{\tau}{ 2 \eta }$,
 \begin{equation}
 \label{eq:parameter_smoothness}
 \begin{split}
-    \rvpi\left( \rmW_t \right)^\top \hat{\rvr}_t - \rvpi\left( \rmW_{t+1} \right)^\top \hat{\rvr}_t \le - \left( \eta - h m \eta^2 \right) \cdot \left\| \frac{d \rvpi\left( \rmW_t \right)^\top \hat{\rvr}_t}{d \rmW_t} \right\|_F^2.
+    ( \rvpi_t - \rvpi_{t+1} )^\top \hat{\rvr}_t &\le - ( \eta - K m \eta^2 ) \cdot \left\| \frac{d \rvpi_t^\top \hat{\rvr}_t}{d \rmW_t} \right\|_F^2 \\
+    &= - \frac{1}{4 K m} \left\| \frac{d \rvpi_t^\top \hat{\rvr}_t}{d \rmW_t} \right\|_F^2.
 \end{split}
 \end{equation}
 \end{lem}
 \begin{proof}
-   Let $\rvr = - \hat{\rvr}_t$ in \cref{lem:logit_smoothness}. By \cref{lem:inner_product_logit_difference_logit_derivative} and \cref{lem:logit_upper_bound_parameter},
+   Let $\rvr = - \hat{\rvr}_t$ in \cref{lem:logit_smoothness},
 \begin{equation*}
 \begin{split}
-    \rvpi\left( \rmW_t \right)^\top \hat{\rvr}_t - \rvpi\left( \rmW_{t+1} \right)^\top \hat{\rvr}_t &= \rvpi\left( \rmW_{t+1} \right)^\top \left[ - \hat{\rvr}_t \right] - \rvpi\left( \rmW_t \right)^\top \left[ - \hat{\rvr}_t \right]  \\
-    &= \rvpi\left( \rvo_{t+1} \right)^\top \left[ - \hat{\rvr}_t \right] - \rvpi\left( \rvo_t \right)^\top \left[ - \hat{\rvr}_t \right] \\
-    &\le \left\langle - \frac{d \rvpi\left( \rvo_t \right)^\top \hat{\rvr}_t}{d \rvo_t}, \rvo_{t+1} - \rvo_t \right\rangle + \left\| \rvo_{t+1} - \rvo_t  \right\|_2^2 \\
-    &\le - \eta \cdot \left\| \frac{d \rvpi\left(\rmW_t\right)^\top \hat{\rvr}_t}{d \rmW_t} \right\|_F^2 + h m \left\| \rmW_{t+1} - \rmW_t \right\|_F^2 \\
-    &= - \eta \cdot \left\| \frac{d \rvpi\left(\rmW_t\right)^\top \hat{\rvr}_t}{d \rmW_t} \right\|_F^2 + h m \eta^2 \left\| \frac{d \rvpi\left(\rmW_t\right)^\top \hat{\rvr}_t}{d \rmW_t} \right\|_F^2. \qedhere
+    ( \rvpi_t - \rvpi_{t+1} )^\top \hat{\rvr}_t &= ( \rvpi_{t+1} - \rvpi_{t} )^\top ( - \hat{\rvr}_t ) \\
+    &= ( \rvpi( \rvo_{t+1} )  - \rvpi( \rvo_{t} ) )^\top ( - \hat{\rvr}_t ) \\
+    &\le \left\langle - \frac{d \rvpi( \rvo_t )^\top \hat{\rvr}_t}{d \rvo_t}, \rvo_{t+1} - \rvo_t \right\rangle + \| \rvo_{t+1} - \rvo_t  \|^2 \qquad \left( \text{by \cref{lem:logit_smoothness}}\right) \\
+    &\le - \eta \cdot \left\| \frac{d \rvpi_t^\top \hat{\rvr}_t}{d \rmW_t} \right\|_F^2 + K m \| \rmW_{t+1} - \rmW_t \|_F^2 \qquad \left( \text{by \cref{lem:inner_product_logit_difference_logit_derivative}, \cref{lem:logit_upper_bound_parameter}} \right) \\
+    &= - \eta \cdot \left\| \frac{d \rvpi_t^\top \hat{\rvr}_t}{d \rmW_t} \right\|_F^2 + K m \eta^2 \left\| \frac{d \rvpi_t^\top \hat{\rvr}_t}{d \rmW_t} \right\|_F^2. \qedhere
 \end{split}
 \end{equation*}
 \end{proof}
 
 \begin{lem}
 \label{lem:inner_product_logit_difference_logit_derivative}
-    $\rmW_{t+1} = \rmW_t + \eta \cdot \frac{d \rvpi\left(\rmW_t\right)^\top \hat{\rvr}_t}{d \rmW_t}$. Denote $\rvo_{t+1}$ and $\rvo_t$ as the logit vectors of $\rmW_t$ and $\rmW_{t+1}$ at state $\rvs$, respectively. $\forall t \le \frac{\tau}{ 2 \eta }$,
+    $\rmW_{t+1} \gets \rmW_t + \eta \cdot \frac{d \rvpi_t^\top \hat{\rvr}_t}{d \rmW_t}$. Denote $\rvo_{t+1}$ and $\rvo_t$ as logit vectors of $\rmW_t$ and $\rmW_{t+1}$, respectively. $\forall t \le \frac{\tau}{ 2 \eta }$,
 \begin{equation*}
 \begin{split}
-    \left\langle - \frac{d \rvpi\left( \rvo_t \right)^\top \hat{\rvr}_t}{d \rvo_t}, \rvo_{t+1} - \rvo_t \right\rangle = - \eta \left\| \frac{d \rvpi\left(\rmW_t\right)^\top \hat{\rvr}_t}{d \rmW_t} \right\|_F^2.
+    \left\langle - \frac{d \rvpi( \rvo_t )^\top \hat{\rvr}_t}{d \rvo_t}, \rvo_{t+1} - \rvo_t \right\rangle = - \eta \left\| \frac{d \rvpi_t^\top \hat{\rvr}_t}{d \rmW_t} \right\|_F^2.
 \end{split}
 \end{equation*}
 \end{lem}
@@ -434,6 +433,8 @@ Combining the two above results,
 \end{split}
 \end{equation*}
 \end{proof}
+
+=======================updated
 
 \begin{lem}
 \label{lem:logit_upper_bound_parameter}
