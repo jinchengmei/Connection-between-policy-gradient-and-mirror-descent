@@ -1,18 +1,18 @@
 \section{Empirical Policy Gradient}
 \label{sec:policy_gradient}
 
-\cref{thm:online_learning_regret} shows that the variation of learning objectives matters when gradient based methods are used in online learning. In stochastic bandit settings, to characterize similar issues when different objectives are used for learning, we define a special functional variation, called \textbf{reward signal variation}.
+\cref{thm:online_learning_regret} shows that the variation of the learning objectives matters when gradient based methods are used in online learning. In stochastic bandit settings, to characterize the similar issue when different objectives are used for learning, we define a special functional variation, called the \textbf{reward signal variation}.
 
 \begin{defi}[Reward signal variation]
 \label{defi:reward_signal_variation}
-Given a sequence of reward signals $\{ \tilde{\rvr}_t \in [0,1]^K: t = 0, 1, 2, \dots, T-1 \}$, define reward signal variation
+Given a sequence of reward signals $\{ \tilde{\rvr}_t \in [0,1]^K: t = 0, 1, 2, \dots, T-1 \}$, define the reward signal variation
 $V_{T}^{\tilde{\rvr}} \coloneqq \sum_{t=0}^{T-1}{\max\limits_{\rvpi \in \Delta}{\left| \rvpi^\top(\tilde{\rvr}_{t+1} - \tilde{\rvr}_{t}) \right| } } \le \sum_{t=0}^{T-1}{\left\| \tilde{\rvr}_{t+1} - \tilde{\rvr}_{t} \right\|_1  }.$
 \end{defi}
 
-Using the following example, we show different reward signal has significantly different variations.
+Using the following example, we show that a different reward signal leads to significantly different variation.
 
 \begin{eg}
-Consider a true mean reward scalar $r \in [0, 1]$, and its two observed samples $r_t, r_{t+1} \in [0, 1]$. $\left| r_t - r_{t+1} \right| \in O(1)$ is independent with $t$, and it leads to $V_T^r \in O(T)$. On the other hand, consider empirical mean $\hat{r}_t, \hat{r}_{t+1} \in [0, 1]$, and
+Consider a true mean reward scalar $r \in [0, 1]$, and its two observed samples $r_t, r_{t+1} \in [0, 1]$. $\left| r_t - r_{t+1} \right| \in O(1)$ is independent with $t$, and leads to $V_T^r \in O(T)$. On the other hand, consider the empirical mean $\hat{r}_t, \hat{r}_{t+1} \in [0, 1]$, and note that
 \begin{equation*}
 \begin{split}
 	\left| \hat{r}_{t} - \hat{r}_{t+1} \right| &\coloneqq \left| \frac{1}{t} \sum_{i=1}^{t}{ r_i } - \frac{1}{t+1} \sum_{i=1}^{t+1}{ r_i } \right| \\
@@ -22,7 +22,7 @@ Consider a true mean reward scalar $r \in [0, 1]$, and its two observed samples 
 decays as $t$ increases, which leads to $V_T^{\hat{r}} \in O(\log{T})$.
 \end{eg}
 
-This simple example demonstrates that empirical mean with enough exploration has sub-linear reward signal variation $V_T^{\hat{r}} \in o(T)$, and it is  much more stable than sampled reward. Inspired by this intuition of controlling reward signal variation $V_T^{\tilde{\rvr}}$, we propose our first algorithm, Empirical Policy Gradient with Uniform Exploration (PGE), as shown in \cref{alg:policy_gradient_uniform_exploration}. Following widely used policy gradient methods, PGE updates policy neural networks by policy gradient update, but with empirical reward estimation $\hat{\rvr}_t$ as its objective. At each step $t$, PGE also has a uniform exploration $t^{ \beta - \frac{1}{3}} \cdot \frac{1}{K}$ for each action, with $\beta > 0$ to be very small. There are two main contrasts between PGE and standard policy gradient methods, i.e., the later use sampled reward as learning objective and have no explicit exploration. Actually, empirical mean and exploration are key points for PGE to control $V_T^{\hat{\rvr}}$. 
+This simple example demonstrates that the empirical mean with sufficient exploration can obtain sub-linear reward signal variation $V_T^{\hat{r}} \in o(T)$, and is much more stable than sampled reward. Inspired by this intuition of controlling reward signal variation $V_T^{\tilde{\rvr}}$, we propose the first algorithm, Empirical Policy Gradient with Uniform Exploration (PGE), as shown in \cref{alg:policy_gradient_uniform_exploration}. Following widely used policy gradient methods, PGE updates a policy neural network by policy gradient update, but with empirical reward estimation $\hat{\rvr}_t$ as its objective. At each step $t$, PGE also has a uniform exploration $t^{ \beta - \frac{1}{3}} \cdot \frac{1}{K}$ for each action, with $\beta > 0$ to be very small. There are two main differences between PGE and standard policy gradient methods: the later uses sampled reward as the learning objective, and has no explicit exploration. In fact, the empirical mean and exploration are key components PGE uses to control $V_T^{\hat{\rvr}}$. 
  
 Based on this idea, PGE achieves $\tilde{O}(T^{2/3})$ regret by balancing exploration, estimation, and online neural network learning, as shown in \cref{thm:policy_gradient_main_result}.
 
@@ -58,7 +58,7 @@ Based on this idea, PGE achieves $\tilde{O}(T^{2/3})$ regret by balancing explor
 	\end{equation*}
 \end{thm}
 \begin{proof}[\bf Proof sketch]
-The sampling policy $\tilde{\rvpi}_t$ of PGE consists of network policy $\rvpi_t$ and uniform exploration. Therefore, we decompose regret into two parts,
+The sampling policy $\tilde{\rvpi}_t$ of PGE consists of a network policy $\rvpi_t$ and uniform exploration. Therefore, we decompose the regret into two parts,
 \begin{equation}
  \label{eq:total_regret_decomposition}
  \scalemath{0.9}{
@@ -67,7 +67,7 @@ The sampling policy $\tilde{\rvpi}_t$ of PGE consists of network policy $\rvpi_t
  \end{split}
  }
  \end{equation}
-where the exploration cost is by summing $(t+1)^{ \beta - \frac{1}{3} }  \cdot \frac{1}{K}$. Also, because of the exploration, for large enough $t$, with high probability, $\hat{\rvr}_t$ will accurately estimate $\rvr$,
+where the exploration cost is determined by summing $(t+1)^{ \beta - \frac{1}{3} }  \cdot \frac{1}{K}$. Also, because of exploration, for sufficiently large $t$, with high probability, $\hat{\rvr}_t$ will accurately estimate $\rvr$,
 \begin{equation*}
     \| \hat{\rvr}_t - \rvr \|_\infty \le t^{\beta - \frac{1}{3}} \le ( K \ln{t} ) ^\frac{1}{3} t^{- \frac{1}{3}}.
 \end{equation*}
@@ -82,7 +82,7 @@ The NN regret can also be decomposed as
 \end{split}
 }
 \end{equation}
-where $\rvpi_t^* \coloneqq \argmax_{\rvpi }{\{ \rvpi^\top \hat{\rvr}_t\}}$. The first inequality is by $( \rvpi_t^* - \rvpi^*)^\top \hat{\rvr}_t \ge 0$ and H{\" o}lder's inequality. Next, the key step is to prove that if $m \ge T^2 /K^2$, $\eta = \frac{1}{2 K m}$, then the dynamic NN regret satisfies,
+where $\rvpi_t^* \coloneqq \argmax_{\rvpi }{\{ \rvpi^\top \hat{\rvr}_t\}}$. The first inequality is by $( \rvpi_t^* - \rvpi^*)^\top \hat{\rvr}_t \ge 0$ and H{\" o}lder's inequality. Next, a key step is to prove that if $m \ge T^2 /K^2$, $\eta = \frac{1}{2 K m}$, then the dynamic NN regret satisfies,
 \begin{equation}
 \label{step:proof1step1}
 \begin{split}
@@ -92,10 +92,10 @@ where $\rvpi_t^* \coloneqq \argmax_{\rvpi }{\{ \rvpi^\top \hat{\rvr}_t\}}$. The 
 with probability at least $1 - \frac{16 K}{T^2}$.
 The regret bound follows by combining \cref{eq:total_regret_decomposition}, \cref{eq:playing_learning_phase_regret_decomposition}, and \cref{step:proof1step1}.
 \end{proof}
-The dynamic regret upper bound of online neural network learning \cref{step:proof1step1} is key to the proof for \cref{thm:policy_gradient_main_result}. Our intuition behind \cref{step:proof1step1} is, \textit{first}, we use exploration to make $\hat{\rvr}_t$ achieve sub-linear variation. In particular, with high probability, for large enough $t$, every action will be visited $\Omega(t^{\frac{2}{3}})$ times, which leads to $\| \hat{\rvr}_t  - \hat{\rvr}_{t+1} \|_1 \le O(t^{-\frac{2}{3}})$. As a result, $V_T^{\hat{\rvr}} \in O(T^{\frac{1}{3}})$; \textit{second}, we observe that expected reward satisfies \cref{asmp:boundedness_smoothness} and \cref{asmp:gradient_dominant}, and they are also satisfied with high probability depending on parameter number of neural networks, according to recently developed NN optimization theory \citep{li2018learning,allen2018convergenceB}. Applying \cref{thm:online_learning_regret}, the dynamic NN regret in \cref{step:proof1step1} is $O\left(\sqrt{T \cdot V_T^{\hat{\rvr}} }\right) \in O(T^{\frac{2}{3}})$.
+The dynamic regret upper bound of online neural network learning \cref{step:proof1step1} is key to the proof for \cref{thm:policy_gradient_main_result}. The intuition behind \cref{step:proof1step1} is as follows. \textit{First}, we use exploration to make $\hat{\rvr}_t$ achieve sub-linear variation. In particular, with high probability, for sufficiently large $t$, every action will be visited $\Omega(t^{\frac{2}{3}})$ times, which leads to $\| \hat{\rvr}_t  - \hat{\rvr}_{t+1} \|_1 \le O(t^{-\frac{2}{3}})$. As a result, $V_T^{\hat{\rvr}} \in O(T^{\frac{1}{3}})$. \textit{Second}, we observe that expected reward satisfies \cref{asmp:boundedness_smoothness} and \cref{asmp:gradient_dominant}, which are also satisfied with high probability depending on number of neural network parameters, according to the recently developed NN optimization theory \citep{li2018learning,allen2018convergenceB}. By applying \cref{thm:online_learning_regret}, the dynamic NN regret in \cref{step:proof1step1} can be shown to be $O\left(\sqrt{T \cdot V_T^{\hat{\rvr}} }\right) \in O(T^{\frac{2}{3}})$.
 
 \begin{remk}
-The three parts, i.e., exploration cost, estimation error, dynamic regret for online neural network learning, in the proof for \cref{thm:policy_gradient_main_result} are almost matching with each other at order $\tilde{O}(T^{2/3})$, which is worse than $\Omega(\sqrt{T})$ lower bound. However, gradient based methods with function approximations may have lower bound higher than general $\Omega(\sqrt{T})$. Whether our result is optimal is under investigation.
+The three parts for online neural network learning (exploration cost, estimation error, and dynamic regret) in the proof for \cref{thm:policy_gradient_main_result} are almost matching each other at order $\tilde{O}(T^{2/3})$, which is worse than the $\Omega(\sqrt{T})$ lower bound. However, gradient based methods with function approximation may have a lower bound that is higher than the general $\Omega(\sqrt{T})$. Whether our result is optimal remains under investigation.
 \end{remk}
 
 \iffalse
