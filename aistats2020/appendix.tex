@@ -603,3 +603,120 @@ With probability at least $1 - \exp\left\{ - \frac{m}{8} \left( 1 - \frac{\sqrt{
 \begin{proof}
 Use \cref{lem:gradient_coupling} and \cref{lem:chernoff} with $\alpha = \frac{1}{2}$, $p = 1 - \frac{\sqrt{2}\tau}{\sqrt{\pi}\sigma}$, and $\mu = m \left( 1 - \frac{\sqrt{2}\tau}{\sqrt{\pi}\sigma} \right)$.
 \end{proof}
+
+\subsection{Proof for \cref{thm:logit_learning_main_result}}
+
+\textbf{\cref{thm:logit_learning_main_result}.} Given value neural networks as shown in \cref{fig:nn_policy_value}, with number of hidden nodes $m \ge T^2 / K^2$, learning rate $\eta = \frac{1}{K m}$,  $\alpha > 3$, and $\beta > 256$, the expected regret of \cref{alg:logit_learning_eps_greedy_exploration} satisfies,
+\begin{equation*}
+\begin{split}
+    \sum\limits_{t=0}^{T-1}{ ( {\rvpi^*} - \tilde{\rvpi}_t)^\top \rvr } \le \sum\limits_{\Delta(k) > 0}{ \left[ \frac{ 3 \beta ( \ln{T} )^2}{\Delta^2(k)} \right] }  + 3 \ln{T} + C,
+\end{split}
+\end{equation*}
+where $C$ is a constant independent with $T$.
+\begin{proof}
+	By Proposition 2 of \citet{seldin2017improved}, $\forall k \in [K]$, $\forall t \ge t_1(k) \coloneqq \min{\left\{ t : t \ge \frac{4 K \beta (\ln{t})^2}{\Delta^4(k) \ln{K}} \right\}}$,
+	\begin{equation*}
+	\begin{split}
+	\probability{\left\{ \left( n_t(k) \le \frac{\beta \ln{t}}{2 \Delta^2(k)} \right) \text{or} \left( n_t(k^*) \le \frac{\beta \ln{t}}{2 \Delta^2(k)} \right) \right\}} \le \left( \frac{\ln{t}}{t \Delta^2(k)} \right)^{\alpha - 2} + 2 \left(\frac{1}{t}\right)^{\frac{\beta}{8}}.
+	\end{split}
+	\end{equation*}
+	Suppose that $n_t(k) \ge \frac{\beta \ln{t}}{2 \Delta^2(k)}$ and $n_t(k^*) \ge \frac{\beta \ln{t}}{2 \Delta^2(k)} > \frac{25 \ln{t}}{\Delta^2(k)}$. By Hoeffding's inequality,
+	\begin{equation*}
+	    \probability{\left\{ | \hat{r}_t(k) - r(k) | \ge \frac{\Delta(k)}{5} \right\}} \le \frac{2}{t^2}, \quad \forall k \in [K].
+	\end{equation*}
+	With abuse of notation, denote $k = A_t$, according to \cref{alg:logit_learning_eps_greedy_exploration},
+	\begin{equation*}
+	\begin{split}
+	    \| \hat{\rvr}_t - \hat{\rvr}_{t+1} \| = | \hat{r}_t(k) - \hat{r}_{t+1}(k) | = \frac{| \hat{r}_t(k) - R_t |}{n_t(k) + 1} \le \frac{1}{n_t(k)} \le \frac{2 \Delta^2(k)}{\beta \ln{t}} \le \frac{\Delta^2(k)}{\ln{t}}.
+	\end{split}
+	\end{equation*}
+	According to \cref{lem:logit_l2_loss_parameter_smoothness}, $\forall t \le \frac{\tau}{2 \eta}$,
+	\begin{equation*}
+	\begin{split}
+	\frac{1}{2} \| \rvo_{t+1} - \hat{\rvr}_{t+1}\|^2 &= \frac{1}{2} \| \rvo_{t+1} - \hat{\rvr}_t\|^2 + ( \rvo_{t+1} - \hat{\rvr}_t )^\top ( \hat{\rvr}_t - \hat{\rvr}_{t+1} ) + \frac{1}{2} \| \hat{\rvr}_t - \hat{\rvr}_{t+1} \|^2 \\
+	&\le \frac{1}{2} \| \rvo_{t+1} - \hat{\rvr}_t\|^2 + \| \rvo_{t+1} - \hat{\rvr}_t \| \cdot \| \hat{\rvr}_t - \hat{\rvr}_{t+1} \| + \frac{1}{2} \| \hat{\rvr}_t - \hat{\rvr}_{t+1} \|^2 \\
+	&\le \left( 1 - \frac{1}{2 K} \right) \cdot \frac{1}{2} \| \rvo_t - \hat{\rvr}_t\|^2 + \sqrt{1 - \frac{1}{2 K} } \cdot \frac{\Delta^2(k)}{\ln{t}} \cdot \| \rvo_t  - \hat{\rvr}_t\| + \frac{\Delta^4(k)}{2 \left( \ln{t} \right)^2 } \\
+	&= \frac{1}{2} \left( \sqrt{1 - \frac{1}{2 K} } \cdot \| \rvo_t - \hat{\rvr}_t\| + \frac{\Delta^2(k)}{\ln{t}} \right)^2,
+	\end{split}
+	\end{equation*}
+	which implies,
+	\begin{equation*}
+	    \| \rvo_{t+1}  - \hat{\rvr}_{t+1}\| \le \sqrt{1 - \frac{1}{2 K} } \cdot \| \rvo_t - \hat{\rvr}_t\| + \frac{\Delta^2(k)}{\ln{t}}.
+	\end{equation*}
+	If $\| \rvo_t - \hat{\rvr}_t\| \le \frac{\Delta(k)}{5}$, $\forall t \ge t_2(k) \coloneqq \min\left\{ t: \ln{t} \ge \frac{5 \Delta(k) }{1 - \sqrt{1 - \frac{1}{2 K}}} \right\}$,
+	\begin{equation*}
+	\begin{split}
+	\| \rvo_{t+1}  - \hat{\rvr}_{t+1}\| &\le \sqrt{1 - \frac{1}{2 K}} \cdot \frac{\Delta(k)}{5} + \left(1 - \sqrt{1 - \frac{1}{2 K}}\right) \cdot \frac{\Delta(k)}{5} = \frac{\Delta(k)}{5}.
+	\end{split}
+	\end{equation*}
+	On the other hand, if $\| \rvo_t  - \hat{\rvr}_t\| > \frac{\Delta(k)}{5}$, $\forall t \ge t_3(k) \coloneqq \min\left\{ t: \ln{t} \ge \frac{10 \Delta(k)}{1 - \sqrt{1 - \frac{1}{2 K}}} \right\}$,
+	\begin{equation*}
+	\begin{split}
+	\| \rvo_{t+1}  - \hat{\rvr}_{t+1}\| &\le \sqrt{1 - \frac{1}{2 K}} \cdot \| \rvo_t - \hat{\rvr}_t\| + \frac{1 - \sqrt{1 - \frac{1}{2 K}}}{2} \cdot \frac{\Delta(k)}{5} \\
+	&< \frac{1 + \sqrt{1 - \frac{1}{2 K}}}{2} \cdot \| \rvo_t - \hat{\rvr}_t\|.
+	\end{split}
+	\end{equation*}
+	Note $\frac{1 + \sqrt{1 - \frac{1}{2 K}}}{2} \in \left(0, 1\right)$, therefore $\forall t \ge t_4(k) \coloneqq \min{\left\{ t : \left( \frac{1 + \sqrt{1 - \frac{1}{2 K}}}{2} \right)^t \sqrt{K} \le \frac{\Delta(k)}{5}  \right\}}$, we have $\| \rvo_t  - \hat{\rvr}_t\| \le \frac{\Delta(k)}{5}$. By the triangle inequality,
+	\begin{equation*}
+	\begin{split}
+	| o_t(k) - r(k) | &\le | o_t(k) - \hat{r}_t(k) | + | \hat{r}_t(k) - r(k) | \\
+	&\le \| \rvo_t - \hat{\rvr}_t\| + | \hat{r}_t(k) - r(k) | \\
+	&\le \frac{2 \Delta(k)}{5}, \quad \forall k \in [K].
+	\end{split}
+	\end{equation*}
+	Denote $\bar{t}(k) \coloneqq \max\left\{ t_1(k), t_2(k), t_3(k) + t_4(k) \right\} = \max\left\{ t_1(k), t_3(k) + t_4(k) \right\} $. After $\bar{t}(k)$ steps, with probability at least $1 - \frac{2 K}{t^2}$, $\rvpi_t$, the greedy policy induced by $\rvo_t$, will coincide with the optimal policy $\rvpi^*$. Finally, for $\alpha = 3$ and $\beta = 256$, by \cref{lem:delta_estimation_lower_bound},
+	\begin{equation*}
+	\begin{split}
+	\sum\limits_{t=1}^{T}{ \expectation{ \left[ \varepsilon_t(k) \right]} } &= \sum\limits_{t=1}^{T}{ \expectation{ \left[ \min\left\{ \frac{1}{2 K}, \frac{1}{2} \sqrt{\frac{\ln{K}}{ t K}},  \frac{\beta \ln{t}}{t \hat{\Delta}_t^2(k)} \right\} \right]} } \\
+	&\le \sum\limits_{t=1}^{T}{ \expectation{ \left[  \frac{\beta \ln{t}}{t \hat{\Delta}_t^2(k)} \right]} } \\
+	&\le t_1(k) + \frac{ 4 \beta ( ( \ln{T})^2 + \ln{T} )}{\Delta^2(k)} + \sum\limits_{t = t_1(k)}^{T}{ \left[ \frac{2}{ K t^{\alpha-1}} + \left( \frac{\ln{t}}{t \Delta^2(k)} \right)^{\alpha - 2} + 2 \left(\frac{1}{t}\right)^{\frac{\beta}{8}} \right] } \\
+	&\le t_1(k) + \frac{\beta ( ( \ln{T})^2 + \ln{T} )}{\Delta^2(k)} + \frac{ ( ( \ln{T})^2 + \ln{T} )}{\Delta^2(k)} + \frac{2 ( \ln{T} + 1)}{K} + \frac{2 \pi^2}{3}.
+	\end{split}
+	\end{equation*}
+	Therefore, for each suboptimal arm $k$, the expected sampled number will be upper bounded by,
+	\begin{equation*}
+	\begin{split}
+	\bar{t}(k) + \sum\limits_{t = \bar{t}(k) }^{T}{ \left[ 2 \left(\frac{1}{t}\right)^{\frac{\beta}{8}} + \left( \frac{\ln{t}}{t \Delta^2(k)} \right)^{\alpha - 2} \right] } + \sum\limits_{t=1}^{T}{ \expectation{ \left[ \varepsilon_t(k) \right]} } \le 2 \bar{t}(k) + \frac{ 3 \beta ( \ln{T} )^2}{\Delta^2(k)} + \frac{3 \ln{T}}{h} + 2 \pi^2 + o(1).
+	\end{split}
+	\end{equation*}
+Summing up the expected sampled number of all the actions obtains the results, where 
+\begin{equation*}
+C \coloneqq 2 \sum\limits_{k \in [K]}{ \bar{t}(k)} + 2 \pi^2 K + o(1)
+\end{equation*}
+is independent with $T$.
+\end{proof}
+
+\begin{lem}
+	\label{lem:delta_estimation_lower_bound}
+	$\forall k \in [K]$, $t \ge t_1(k) \coloneqq \min{\left\{ t : t \ge \frac{4 K \beta \left(\ln{t}\right)^2}{\Delta^4(k) \ln{K}} \right\}}$, and $\beta \ge 64 (\alpha +1)$,
+	\begin{equation*}
+	\probability\left\{ \hat{\Delta}_t(k) \le \Delta(k)/2 \right\} \le \frac{2}{ K t^{\alpha-1}} + \left( \frac{\ln{t}}{t \Delta^2(k)} \right)^{\alpha - 2} + 2 \left(\frac{1}{t}\right)^{\frac{\beta}{8}}.
+	\end{equation*}
+\end{lem}
+\begin{proof}
+    See the proof of Proposition 2 in \citet{seldin2017improved}.
+\end{proof}
+
+\subsubsection{Proof of \cref{lem:logit_l2_loss_parameter_smoothness}}
+
+\textbf{\cref{lem:logit_l2_loss_parameter_smoothness}.}
+$\rmW_{t+1} \gets \rmW_t - \eta \cdot \frac{d \{ \frac{1}{2} \| \rvo_t - \hat{\rvr}_t \|^2 \}}{d \rmW_t}$, with $\eta = \frac{1}{K m}$. With high probability, $\forall t \le \frac{\tau}{2 \eta} \coloneqq \frac{1}{2 \eta \sqrt{m}}$, 
+		\begin{equation*}
+		\begin{split}
+		\frac{1}{2} \| \rvo_{t+1} - \hat{\rvr}_t \|^2 \le \left( 1 - \frac{1}{2 K} \right) \cdot \frac{1}{2} \| \rvo_t - \hat{\rvr}_t \|^2.
+		\end{split}
+		\end{equation*}
+
+\begin{proof}
+According to \cref{lem:logit_upper_bound_parameter}, and using similar arguments as \cref{lem:gradient_lower_bound},
+\begin{equation*}
+\begin{split}
+    \frac{1}{2} \| \rvo_{t+1} - \hat{\rvr}_t \|^2 - \frac{1}{2} \| \rvo_t - \hat{\rvr}_t \|^2 &= \left\langle \rvo_t - \hat{\rvr}_t, \rvo_{t+1} - \rvo_t \right\rangle + \frac{1}{2} \| \rvo_{t+1} - \rvo_t  \|^2 \\
+    &\le \left\langle \rvo_t - \hat{\rvr}_t, - \eta \rmA \rmD(t) \left( \frac{d \{ \frac{1}{2} \| \rvo_t - \hat{\rvr}_t \|^2 \}}{d \rmW_t} \right) \rvs \right\rangle + \frac{K m \eta^2}{2} \left\| \frac{d \{ \frac{1}{2} \| \rvo_t - \hat{\rvr}_t \|^2 \}}{d \rmW_t}  \right\|_F^2 \\
+    &\quad = - \left( \eta - \frac{K m \eta^2}{2} \right) \left\| \frac{d \{ \frac{1}{2} \| \rvo_t - \hat{\rvr}_t \|^2 \}}{d \rmW_t}  \right\|_F^2 \\
+    &\quad = - \frac{1}{2 K m} \left\| \frac{d \{ \frac{1}{2} \| \rvo_t - \hat{\rvr}_t \|^2 \}}{d \rmW_t}  \right\|_F^2 \\
+    &\quad = - \frac{1}{2 K m} \sum\limits_{r = 1}^{m}{ \left\| \frac{d \{ \frac{1}{2} \left\| \rvo_t - \hat{\rvr}_t \right\|^2 \}}{d \rvw_r(t)}  \right\|^2 } \\
+    &\quad \le - \frac{1}{2 K} \cdot \frac{1}{2} \| \rvo_t - \hat{\rvr}_t \|^2. \qedhere
+\end{split}
+\end{equation*}
+\end{proof}

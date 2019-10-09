@@ -68,7 +68,6 @@ The next theorem shows that LLE has a nearly optimal regret rate in the stochast
 \label{thm:logit_learning_main_result}
     Given value neural networks as shown in \cref{fig:nn_policy_value}, with number of hidden nodes $m \ge T^2 / K^2$, learning rate $\eta = \frac{1}{K m}$,  $\alpha > 3$, and $\beta > 256$, the expected regret of \cref{alg:logit_learning_eps_greedy_exploration} satisfies,
 \begin{equation*}
-\small
 \begin{split}
     \sum\limits_{t=0}^{T-1}{ ( {\rvpi^*} - \tilde{\rvpi}_t)^\top \rvr } \le \sum\limits_{\Delta(k) > 0}{ \left[ \frac{ 3 \beta ( \ln{T} )^2}{\Delta^2(k)} \right] }  + 3 \ln{T} + C,
 \end{split}
@@ -105,7 +104,7 @@ where $C$ is a constant independent with $T$.
 		\end{equation*}
 		where the last inequality is by $\| \hat{\rvr}_t - \hat{\rvr}_{t+1} \|_2 \le \frac{\Delta^2(k)}{\ln{t}}$ because $\hat{\rvr}_t$  and $\hat{\rvr}_{t+1}$ are two consecutive empirical means and each action has been selected at least $\frac{\ln t}{\Delta^2(k)}$ times. Denote $\delta_t = \| \rvo_t - \hat{\rvr}_{t}\|$. Combining with \cref{lem:logit_l2_loss_parameter_smoothness},
 		\begin{equation*}
-		    \delta_{t+1} \le \sqrt{1 - \frac{1}{2 h} } \cdot \delta_{t} + \frac{\Delta^2(k)}{\ln{t}},
+		    \delta_{t+1} \le \sqrt{1 - \frac{1}{2 K} } \cdot \delta_{t} + \frac{\Delta^2(k)}{\ln{t}},
 		\end{equation*}
 		based on which one can further show that $\delta_t \le \Delta(k) / 5$ for large enough $t$. Finally, the probability of selecting a sub-optimal action can be bounded by the sum of the exploration probability and the probability of the rare event when not all the above claims hold, which leads to an upper bound on the expected regret.
 		\end{proof}
@@ -114,7 +113,7 @@ where $C$ is a constant independent with $T$.
 		$\rmW_{t+1} \gets \rmW_t - \eta \cdot \frac{d \{ \frac{1}{2} \| \rvo_t - \hat{\rvr}_t \|^2 \}}{d \rmW_t}$, with $\eta = \frac{1}{K m}$. With high probability, $\forall t \le \frac{\tau}{2 \eta} \coloneqq \frac{1}{2 \eta \sqrt{m}}$, 
 		\begin{equation*}
 		\begin{split}
-		\frac{1}{2} \| \rvo_{t+1} - \hat{\rvr}_t \|^2 \le \left( 1 - \frac{1}{2 h} \right) \cdot \frac{1}{2} \| \rvo_t - \hat{\rvr}_t \|^2.
+		\frac{1}{2} \| \rvo_{t+1} - \hat{\rvr}_t \|^2 \le \left( 1 - \frac{1}{2 K} \right) \cdot \frac{1}{2} \| \rvo_t - \hat{\rvr}_t \|^2.
 		\end{split}
 		\end{equation*}
 	\end{lem}
