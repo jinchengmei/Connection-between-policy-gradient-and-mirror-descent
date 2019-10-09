@@ -26,7 +26,7 @@ The standard MAB setting is a special case of the state dependent bandit setting
 \label{thm:many_state_dependent_bandit_setting}
      Suppose $m \in \Theta\left( \frac{n^{10} T^2}{c^4 \delta^4 K^2} \right)$, and $\eta = \frac{c^2 \delta^2}{16 n^4 K m}$. The expected regret of \cref{alg:logit_learning_eps_greedy_exploration} satisfies
 \begin{equation*}
-\scalemath{0.78}{
+\scalemath{0.75}{
 	\frac{1}{n } \sum\limits_{i=1}^{n}{ \sum\limits_{t=0}^{T-1}{ ( {\rvpi_i^*} - \tilde{\rvpi}_{i, t})^\top \rvr_i  } \le \sum\limits_{k \in [K] : \Delta_i(k) > 0}{ \left[ \frac{ 3 \beta n^8 \left( \ln{T} \right)^2}{c^4 \delta^4 \Delta_i^2(k)} \right] } + 3 n \ln{T} + C },
 }
 \end{equation*}
