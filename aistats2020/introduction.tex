@@ -1,38 +1,39 @@
 \section{Introduction}
 \label{sec:introduction}
 
-Reinforcement learning (RL) algorithms usually enjoy favorable theoretical guarantees in the tabular case of both one step decision making and the Markov decision process (MDP) setting \citep{sutton2018reinforcement}.
+Reinforcement learning (RL) algorithms usually enjoy favorable theoretical guarantees in the tabular case for both one step decision making and Markov decision processes (MDP) \citep{sutton2018reinforcement}.
 %In the traditional RL field, without the DL function approximations, there are many algorithms enjoying favorable theoretical guarantees, under the the tabular cases of the bandit settings and the Markov decision process (MDP) setting \citep{sutton2018reinforcement}. 
-For example, (nearly) optimal algorithms have been discovered to achieve finite time regret upper bounds under the stochastic and adversarial bandit settings \citep{bubeck2012regret}. Q-learning is proved to be efficient in an episodic MDP setting \cite{jin2018q}. With linear and smooth function approximations, the Gradient Temporal Difference method and its variants have also been proved to converge to the fixed points of the projected Bellman operators, though the performance of the fixed-point policies can be arbitrarily bad, without imposing any further constraints on the function approximation classes \citep{sutton2009fast,sutton2009convergent,bhatnagar2009convergent}.
+For example, (nearly) optimal algorithms have been discovered to achieve finite time regret upper bounds under the stochastic and adversarial bandit settings \citep{bubeck2012regret}. Q-learning has been proved efficient for episodic MDPs \cite{jin2018q}. With linear and smooth function approximation, the Gradient Temporal Difference method and its variants have also been proved to converge to fixed points of the projected Bellman operators, though the performance of the fixed-point policies can be arbitrarily bad, without imposing any further constraints on the function approximation classes \citep{sutton2009fast,sutton2009convergent,bhatnagar2009convergent}.
 
-Deep reinforcement learning (DRL) methods have further improved traditional RL methods in practice and achieved a number of great successes, including professional level game players in Go \citep{silver2016masteringA,silver2017masteringB}, Atari \citep{mnih2015human}, Poker \citep{moravvcik2017deepstack}, and robotic controls \citep{lillicrap2015continuous,levine2016end}.
-DRL methods optimize RL objectives during learning while employing deep neural networks as function approximations, thus combine the rich representation power of neural networks and the effective learning strategies from RL \citep{sutton2018reinforcement}. 
-However, also mainly due to the complex behavior of neural networks, theoretical analyses of DRL methods become extremely difficult.
+Deep reinforcement learning (DRL) methods have further improved traditional RL methods in practice and achieved several notable successes, including professional level game players in Go \citep{silver2016masteringA,silver2017masteringB}, Atari \citep{mnih2015human}, Poker \citep{moravvcik2017deepstack}, and robotic controls \citep{lillicrap2015continuous,levine2016end}.
+DRL methods optimize RL objectives during learning while employing deep neural networks as function approximators, hence they combine the rich representation power of neural networks with effective learning strategies from RL \citep{sutton2018reinforcement}. 
+However, mainly due to the complex behavior of neural networks, theoretical analyses of DRL methods has been extremely difficult.
 
 %Existing analyses in the literature usually contain various unverifiable assumptions. \citep{krishnamurthy2016pac} assumes that the global optimal policy is contained in the parametric function class. \citep{dai2018sbeed} assumes having knowledge of the function approximation errors, which cannot be obtained in practice.
 %These works do not particularly focus on neural networks. Although their results can be generally applied to DRL methods, their analyses do not reflect the improvement by using neural networks as function approximations. 
 
-In this paper, we take one step further to theoretically understand the behavior of DRL methods. 
-We propose and analyze two algorithms, one policy based and the other value based, in stochastic bandit problem with a neural network as the function approximation. Our methods, while not exactly the same as popular DRL methods in the literature, catch the essences of value based and policy based DRL methods. To summarize, our contributions are as follows.
+In this paper, we contribute progress toward theoretically understanding the behavior of DRL methods. 
+We propose and analyze two algorithms, one policy based and the other value based, for stochastic bandit problems with a neural network as the function approximator. Our methods, while not exactly the same as popular DRL methods in the literature, capture the essence of value based and policy based DRL methods. To summarize, our main contributions are as follows.
 \begin{itemize}
-       \item We propose an upper bound on the dynamic regret in online learning with non-convex loss objectives. This result provides a fundamental tool for analyzing our proposed algorithms in stochastic bandit  setting with neural network as function approximations. 
-	\item We propose a policy based method, Policy Gradient with Uniform Exploration (PGE), which is similar to the vanilla policy gradient method, but mixed with an uniform exploration and a momentum on the rewards. We prove that PGE, with over-parametrized neural network as its policy network, enjoys a sub-linear finite time convergence rate in stochastic bandit.
-	\item We propose a value based method, Logit Learning with $\varepsilon$-Greedy Exploration (LLE), which, again with over-parametrized neural network as its value network, achieves a nearly optimal regret under the stochastic bandit setting. This algorithm learns value based objectives using the gradient descent. 
-	\item We discuss how our results can be easily generalized to many other reinforcement learning settings, such as the state dependent stochastic bandit settings and episodic MDPs.
+       \item We propose an upper bound on the dynamic regret in online learning with non-convex loss objectives. This result provides a fundamental tool for analyzing our proposed algorithms in the stochastic bandit setting with neural network function approximators. 
+	\item We propose a policy based method, Policy Gradient with Uniform Exploration (PGE), which is similar to classical policy gradient, but incorporating uniform exploration and an additional momentum term on the rewards. We prove that PGE, with an over-parametrized neural network as its policy network, enjoys a sub-linear finite time convergence rate in stochastic bandit problems.
+	\item We propose a value based method, Logit Learning with $\varepsilon$-Greedy Exploration (LLE), which, again with an over-parametrized neural network as its value network, achieves a nearly optimal regret in the stochastic bandit setting. This algorithm learns value based objectives using simple gradient descent. 
+	\item We discuss how these results can be easily generalized to other reinforcement learning settings, such as state dependent stochastic bandit problems and episodic MDPs.
 \end{itemize}
 \iffalse
 To our best knowledge, this paper is the first result in the literature on the optimization theory of RL methods with neural networks as function approximations. Our results can be seen as an initial step toward understanding the globally convergence for the popular RL methods (the value based learning, and the policy gradient here) with non-linear neural network function approximations, such as Deep Q-Network \cite{mnih2015human}, Asynchronous Actor-Critic Agents \citep{mnih2016asynchronous}, Path Consistency Learning \citep{nachum2017bridging}, and Relative Entropy Policy Search \citep{peters2010relative}, combining with more practical function approximations and training procedures.
 \fi
-Finally, we make some comments on the technique side of our contributions. 
-Our results are inspired by the recent progresses on over-parametrized neural networks for supervised learning (regression and classification) \citep{li2018learning,du2018gradientA,du2018gradientB,allen2018convergenceA,allen2018convergenceB}. 
-However, because of the different learning settings between supervised learning and reinforcement learning, many challenges still persist. 
-One standard challenge is the balance between exploration and exploitation in the RL/bandits problems.
-Such balance in our problem becomes more complex, compared to that in the traditional multi-arm bandit setting, as the update of model is performed by gradient descent on the parameters.
-The information gained from one arm will affect the evaluation of the other arms through the parameters of the network, which may help or hurdle the exploration of other arms.
-Another challenge is that there is no true label provided by the environment, so the learning objective itself needs to be estimated from the collected data.
+%Finally, we make some comments on the technique side of our contributions. 
+These results are inspired by recent progress in analyzing over-parametrized neural networks for supervised learning (regression and classification) \citep{li2018learning,du2018gradientA,du2018gradientB,allen2018convergenceA,allen2018convergenceB}. 
+However, because of the differences between the supervised learning and reinforcement learning settings many challenges still persist. 
+One standard challenge is the balance between exploration and exploitation in RL and bandit problems.
+Managing this balance is significantly more complex in our setting than traditional multi-arm bandits, because we consider model updates performed by gradient descent on model parameters.
+With a parametric representation,
+the information gained from one arm will affect the evaluation of the other arms via the parameters of the network, which may help or hamper the exploration of other arms.
+Another challenge is that there is no true label provided by the environment, hence the learning objective itself needs to be estimated from the collected data.
 We propose to use the empirical average rewards instead of a single reward on the current step for the learning objective. 
 Note that even so we still do NOT have an accurate estimate on the rewards.
-To see that, as we hope that our policy can achieve a sub-linear (or nearly optimal) regret rate, only a limited budget (sub-linear or $O(\ln T )$) is allowed for the sub-optimal arms. Thus, as a sharp contrast to supervised learning with i.i.d. samples, we do NOT have enough samples from the sub-optimal arms for accurate estimates.  
+That is, since we hope that our policy can achieve a sub-linear (or nearly optimal) regret rate, only a limited budget (sub-linear or $O(\ln T )$) is allowed for the sub-optimal arms.  Thus, in sharp contrast to supervised learning with i.i.d.\ samples, the limited sample budget in the bandit case will NOT provide sufficient data on sub-optimal arms to support uniformly accurate value estimates.
 
 
 %In the DL field, the well known situation is that the theoretical understanding is far behind with the practical applications \citep{goodfellow2016deep,zhang2016understanding}. Fortunately, there are still continuous progresses in several aspects, including expressiveness \citep{cybenko1989approximation,raghu2017expressive}, optimization \citep{kawaguchi2016deep,li2017convergence,li2018learning,du2018gradientA,du2018gradientB,allen2018convergenceA,allen2018convergenceB}, and generalization \cite{neyshabur2017exploring,allen2018learning} of the DL theory. 
@@ -48,18 +49,18 @@ To see that, as we hope that our policy can achieve a sub-linear (or nearly opti
 
 
 
-The rest of the paper is organized as follows. \cref{subsec:notations} presents the notations. 
- \cref{sec:background} introduces the background, settings and the network structures. 
- \cref{sec:online_learning} provides a general upper bound on the dynamic regret in online learning with non-convex loss objectives.
- \cref{sec:policy_gradient} proposes the policy gradient algorithm.
- \cref{sec:logit_learning} proposes the logit learning algorithm. \cref{sec:general_settings} briefly shows the results in several more general settings. \cref{sec:future_work} discusses some open problems and future work. \cref{sec:conclusions} comes to our conclusions. All the formal proofs are deferred to the appendix due to the space limit.
+The remainder of the paper is organized as follows. After introducing notation in \cref{subsec:notations},
+ \cref{sec:background} introduces the background, settings and the network structures we consider. 
+ \cref{sec:online_learning} then provides a general upper bound on the dynamic regret in online learning with non-convex loss objectives.
+ \cref{sec:policy_gradient} proposes the policy gradient algorithm,
+ and \cref{sec:logit_learning} proposes the logit learning algorithm. \cref{sec:general_settings} briefly illustrates the results in several more general settings. Finally, \cref{sec:future_work} discusses some open problems and future work, and \cref{sec:conclusions} presents our conclusions. All proofs are given in the appendix. % due to the space limit.
 
-\subsection{Notations}
+\subsection{Notation}
 \label{subsec:notations}
-We use bold lowercase letters to refer to vectors, such as $\rvr$, and bold capital letters to refer to matrices, like $\rmW$. Non-bold lowercase letters are scalars. For example, $u_{i,r} \in \sR$ is the $r$th component of vector $\rvu_i \in \sR^m$. $\rvone$ means an all-one vector, and $\rmI$ refers to an identity matrix, with dimensions depend on the contexts. We also denote $[n] \triangleq \left\{ 1,2, \dots, n \right\}$. 
+We use bold lowercase letters to refer to vectors, such as $\rvr$, and bold capital letters to refer to matrices, like $\rmW$. Non-bold lowercase letters are scalars. For example, $u_{i,r} \in \sR$ is the $r$th component of vector $\rvu_i \in \sR^m$. $\rvone$ means an all-one vector, and $\rmI$ refers to an identity matrix, with dimensions dependent on context. We also denote $[n] \triangleq \left\{ 1,2, \dots, n \right\}$. 
 
 In the sequel, $n$ is the total number of states, and $K$ is the total number of actions that can be taken at each state.
-Also, for $i\in[n]$, let $\rvr_i \in \sR^K$ be the true mean reward vector at state $\rvs_i$. $\rvpi_i^* = \argmax_{\rvpi \in \Delta^{h}}{\left\{ \rvpi^\top \rvr_i \right\}}$ is the optimal policy at state $\rvs_i$. Given a sequence of  stochastic policies $\bf{\Pi} \triangleq \left[ \rvpi_1, \rvpi_2, \dots, \rvpi_n \right] \in {\sR}^{h \times n}$, the expected (mean) loss is defined as,
+Also, for $i\in[n]$, let $\rvr_i \in \sR^K$ be the true mean reward vector at state $\rvs_i$. $\rvpi_i^* = \argmax_{\rvpi \in \Delta^{h}}{\left\{ \rvpi^\top \rvr_i \right\}}$ is the optimal policy at state $\rvs_i$. Given a sequence of stochastic policies $\bf{\Pi} \triangleq \left[ \rvpi_1, \rvpi_2, \dots, \rvpi_n \right] \in {\sR}^{h \times n}$, the expected (mean) loss is defined as
 \begin{equation}
 \label{eq:expected_loss}
 \begin{split}
@@ -67,13 +68,13 @@ Also, for $i\in[n]$, let $\rvr_i \in \sR^K$ be the true mean reward vector at st
 \end{split}
 \end{equation}
 
-We use two-layer fully connected neural networks with ReLU activation as our value function and policy function approximations, as shown in \cref{fig:nn_policy_value}. 
+We consider two-layer fully connected neural networks with ReLU activations as the value function and policy function approximations, as shown in \cref{fig:nn_policy_value}. 
 %The structure of the value network and the policy network  is a 2-layers fully connected neural network with ReLU activation, 
-Each neural network takes the state $\rvs \in \sR^d$ as its input. 
-For the first layer, we use $\rvs_i \in \sR^d$ for $i \in [n]$ refers to the feature vector of the $i$th state, $\rvw_r \in \sR^d$ for $r \in [m]$ to a weight vector in the first hidden layer, and $u_{i,r} \triangleq \rvw_r^\top \rvs_i$ to the $r$th node value of the first hidden layer.
+Each neural network takes the state $\rvs \in \sR^d$ as its input.
+For the first layer, we use $\rvs_i \in \sR^d$ for $i \in [n]$ to refer to the feature vector of the $i$th state, $\rvw_r \in \sR^d$ for $r \in [m]$ to a weight vector in the first hidden layer, and $u_{i,r} \triangleq \rvw_r^\top \rvs_i$ to the $r$th node value of the first hidden layer.
 Let $\rmW^\top \triangleq \left[ \rvw_1, \rvw_2, \dots, \rvw_m \right] \in \sR^{d \times m}$ be the weight matrix of the first hidden layer, thus the hidden layer is $\rvu = \rmW\rvs\in\sR^m$.
 
 Similarly let $\rva_k \in \sR^m$ for $k \in [h]$ be a weight vector in the second hidden layer, and $o_{i,k} \triangleq \sum_{r=1}^{m}{a_{k,r} \cdot \sigma\left( u_{i,r} \right)}$ be the logit of the $k$th action for state $\rvs_i$, where $\sigma(\cdot) = \max\left\{ \cdot, 0 \right\}$ is the ReLU activation function. 
-Let $\rmA^\top \triangleq \left[ \rva_1, \rva_2, \dots, \rva_h \right] \in \sR^{m \times h}$ be the weight matrix of the second hidden layer, then the logit output $\rvo = \rmA\sigma\left( \rvu\right) \in \sR^h$.
+Let $\rmA^\top \triangleq \left[ \rva_1, \rva_2, \dots, \rva_h \right] \in \sR^{m \times h}$ be the weight matrix of the second hidden layer, then the logit output is given by $\rvo = \rmA\sigma\left( \rvu\right) \in \sR^h$.
 
-Lastly, the policy network differs the value network with one additional softmax transform layer in order to output probability distributions, where $\rvpi \triangleq f\left( \rvo \right) = f\left( \rmA \sigma\left( \rmW \rvs \right) \right)$ and $f$ is the softmax function: $f\left( o_{i,k} \right) = \exp\left\{ o_{i,k} \right\} \,/\, \sum_{k^\prime = 1}^{h}{\exp\left\{ o_{i,k^\prime} \right\}}$.
+Finally, the policy network differs from the value network with one additional softmax transform layer to output a probability distribution over actions, where $\rvpi \triangleq f\left( \rvo \right) = f\left( \rmA \sigma\left( \rmW \rvs \right) \right)$ and $f$ is the softmax function: $f\left( o_{i,k} \right) = \exp\left\{ o_{i,k} \right\} \,/\, \sum_{k^\prime = 1}^{h}{\exp\left\{ o_{i,k^\prime} \right\}}$.
