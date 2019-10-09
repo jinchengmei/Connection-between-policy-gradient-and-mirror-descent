@@ -57,24 +57,24 @@ The remainder of the paper is organized as follows. After introducing notation i
 
 \subsection{Notation}
 \label{subsec:notations}
-We use bold lowercase letters to refer to vectors, such as $\rvr$, and bold capital letters to refer to matrices, like $\rmW$. Non-bold lowercase letters are scalars. For example, $u_{i,r} \in \sR$ is the $r$th component of vector $\rvu_i \in \sR^m$. $\rvone$ means an all-one vector, and $\rmI$ refers to an identity matrix, with dimensions dependent on context. We also denote $[n] \triangleq \left\{ 1,2, \dots, n \right\}$. 
+We use bold lowercase letters to refer to vectors, such as $\rvr$, and bold capital letters to refer to matrices, like $\rmW$. Non-bold lowercase letters are scalars. For example, $u_{i,r} \in \sR$ is the $r$th component of vector $\rvu_i \in \sR^m$. $\rvone$ means an all-one vector, and $\rmI$ refers to an identity matrix, with dimensions dependent on context. We also denote $[K] \coloneqq \left\{ 1,2, \dots, K \right\}$. 
 
 In the sequel, $n$ is the total number of states, and $K$ is the total number of actions that can be taken at each state.
-Also, for $i\in[n]$, let $\rvr_i \in \sR^K$ be the true mean reward vector at state $\rvs_i$. $\rvpi_i^* = \argmax_{\rvpi \in \Delta^{h}}{\left\{ \rvpi^\top \rvr_i \right\}}$ is the optimal policy at state $\rvs_i$. Given a sequence of stochastic policies $\bf{\Pi} \triangleq \left[ \rvpi_1, \rvpi_2, \dots, \rvpi_n \right] \in {\sR}^{h \times n}$, the expected (mean) loss is defined as
+Also, for $i\in[n]$, let $\rvr_i \in \sR^K$ be the true mean reward vector at state $\rvs_i$. $\rvpi_i^* = \argmax_{\rvpi \in \Delta}{\left\{ \rvpi^\top \rvr_i \right\}}$ is the optimal policy at state $\rvs_i$. Given a sequence of stochastic policies $\mathbf{\Pi} \coloneqq \left[ \rvpi_1, \rvpi_2, \dots, \rvpi_n \right] \in {\sR}^{K \times n}$, the expected (mean) loss is defined as
 \begin{equation}
 \label{eq:expected_loss}
 \begin{split}
-\frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ \left( {\rvpi_i^*}^\top \rvr_i - \rvpi_i^\top \rvr_i \right) }.
+\frac{1}{n} \cdot \sum\limits_{i=1}^{n}{ ( {\rvpi_i^*} - \rvpi_i) ^\top \rvr_i }.
 \end{split}
 \end{equation}
 
 We consider two-layer fully connected neural networks with ReLU activations as the value function and policy function approximations, as shown in \cref{fig:nn_policy_value}. 
 %The structure of the value network and the policy network  is a 2-layers fully connected neural network with ReLU activation, 
 Each neural network takes the state $\rvs \in \sR^d$ as its input.
-For the first layer, we use $\rvs_i \in \sR^d$ for $i \in [n]$ to refer to the feature vector of the $i$th state, $\rvw_r \in \sR^d$ for $r \in [m]$ to a weight vector in the first hidden layer, and $u_{i,r} \triangleq \rvw_r^\top \rvs_i$ to the $r$th node value of the first hidden layer.
-Let $\rmW^\top \triangleq \left[ \rvw_1, \rvw_2, \dots, \rvw_m \right] \in \sR^{d \times m}$ be the weight matrix of the first hidden layer, thus the hidden layer is $\rvu = \rmW\rvs\in\sR^m$.
+For the first layer, we use $\rvs_i \in \sR^d$ for $i \in [n]$ to refer to the feature vector of the $i$th state, $\rvw_r \in \sR^d$ for $r \in [m]$ to a weight vector in the first hidden layer, and $u_{i,r} \coloneqq \rvw_r^\top \rvs_i$ to the $r$th node value of the first hidden layer.
+Let $\rmW^\top \coloneqq \left[ \rvw_1, \rvw_2, \dots, \rvw_m \right] \in \sR^{d \times m}$ be the weight matrix of the first hidden layer, thus the hidden layer is $\rvu = \rmW\rvs\in\sR^m$.
 
-Similarly let $\rva_k \in \sR^m$ for $k \in [h]$ be a weight vector in the second hidden layer, and $o_{i,k} \triangleq \sum_{r=1}^{m}{a_{k,r} \cdot \sigma\left( u_{i,r} \right)}$ be the logit of the $k$th action for state $\rvs_i$, where $\sigma(\cdot) = \max\left\{ \cdot, 0 \right\}$ is the ReLU activation function. 
-Let $\rmA^\top \triangleq \left[ \rva_1, \rva_2, \dots, \rva_h \right] \in \sR^{m \times h}$ be the weight matrix of the second hidden layer, then the logit output is given by $\rvo = \rmA\sigma\left( \rvu\right) \in \sR^h$.
+Similarly let $\rva_k \in \sR^m$ for $k \in [K]$ be a weight vector in the second hidden layer, and $o_{i,k} \coloneqq \sum_{r=1}^{m}{a_{k,r} \cdot \sigma\left( u_{i,r} \right)}$ be the logit of the $k$th action for state $\rvs_i$, where $\sigma(\cdot) = \max\{ \cdot, 0 \}$ is the ReLU activation function. 
+Let $\rmA^\top \coloneqq \left[ \rva_1, \rva_2, \dots, \rva_K \right] \in \sR^{m \times K}$ be the weight matrix of the second hidden layer, then the logit output is given by $\rvo = \rmA\sigma( \rvu) \in \sR^K$.
 
-Finally, the policy network differs from the value network with one additional softmax transform layer to output a probability distribution over actions, where $\rvpi \triangleq f\left( \rvo \right) = f\left( \rmA \sigma\left( \rmW \rvs \right) \right)$ and $f$ is the softmax function: $f\left( o_{i,k} \right) = \exp\left\{ o_{i,k} \right\} \,/\, \sum_{k^\prime = 1}^{h}{\exp\left\{ o_{i,k^\prime} \right\}}$.
+Finally, the policy network differs from the value network with one additional softmax transform layer to output a probability distribution over actions, where $\rvpi \coloneqq f( \rvo ) = f( \rmA \sigma( \rmW \rvs ) )$ and $f$ is the softmax function: $f( o_{i,k} ) = \exp\{ o_{i,k} \} \,/\, \sum_{k^\prime = 1}^{K}{\exp\{ o_{i,k^\prime} \}}$.
