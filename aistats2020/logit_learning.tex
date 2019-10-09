@@ -1,14 +1,14 @@
 \section{Empirical Logit Learning}
 \label{sec:logit_learning}
 
-As discussed in \cref{sec:policy_gradient}, PGE achieves $\tilde{O}(T^{2/3})$ regret. One may recall that data dependent $O(\ln(T))$ regret in stochastic MAB \citep{bubeck2012regret}. A natural question is whether gradient based methods can (nearly) achieve good results.
+As discussed in \cref{sec:policy_gradient}, PGE achieves $\tilde{O}(T^{2/3})$ regret. One may recall that data dependent $O(\ln(T))$ regret can be obtained in stochastic MAB \citep{bubeck2012regret}. A natural question is whether gradient based methods can (nearly) achieve similarly good results.
 
-In this section, we affirm this question by proposing an alternative algorithm, called Empirical Logit Learning with $\varepsilon$-Greedy Exploration (LLE), that is similar to value based reinforcement learning methods.
+In this section, we affirm this question by proposing an alternative algorithm, called Empirical Logit Learning with $\varepsilon$-Greedy Exploration (LLE), which is similar to value based reinforcement learning methods.
 
-Comparing with PGE, LLE has two main differences. \textit{First}, the learning of LLE happens in the dual value/logit space, with $\ell_2$ loss $\frac{1}{2} \| \rvo_t - \hat{\rvr}_t \|^2$ as its objective. LLE takes actions based on $\rvo_t$. To get data dependent regret, $\rvo_t$ should be close to the true mean reward $\rvr$, which is not satisfied by using expected reward $\rvpi^\top \rvr$ objective. Actually, a policy $\rvpi$ with $(\rvpi^* - \rvpi)^\top \rvr = \varepsilon$ can put largest probability on the optimal arm, and there are many different ways to assign the remaining probability to sub-optimal arms. Through softmax transform, logit $\rvo$ is not guaranteed to match $\rvr$ or $\hat{\rvr}$. Therefore, we use $\ell_2$ loss as the learning objective. \textit{Second}, the reward signal in PGE satisfies $\| \hat{\rvr}_t  - \hat{\rvr}_{t+1} \|_1 \le O(t^{-\frac{2}{3}})$, and its reward signal variation is $V_T^{\hat{\rvr}} \in O(T^{\frac{1}{3}})$, which makes the learning objective stable but incurs more exploration cost. In contrast, LLE assigns much less exploration based on reward gap estimation, and its reward signal satisfies $\| \hat{\rvr}_t - \hat{\rvr}_{t+1} \|_1 \le \frac{\Delta^2}{\ln{t}}$, which means $V_T^{\hat{\rvr}} \in O(T/\ln{T})$. Directly using \cref{thm:online_learning_regret} gives undesirable regret. However, this reward signal helps $\rvo_t$ approximate $\hat{\rvr}_t$, and these two properties together suffice for convergence.
+Compared with PGE, LLE has two main differences. \textit{First}, the learning of LLE happens in the dual value/logit space, with $\ell_2$ loss $\frac{1}{2} \| \rvo_t - \hat{\rvr}_t \|^2$ as its objective. LLE takes actions based on $\rvo_t$. To get data dependent regret, $\rvo_t$ should be close to the true mean reward $\rvr$, which is not satisfied by using the expected reward $\rvpi^\top \rvr$ objective. Actually, a policy $\rvpi$ with $(\rvpi^* - \rvpi)^\top \rvr = \varepsilon$ can put the largest probability on the optimal arm, while there are many different ways to assign the remaining probability to sub-optimal arms. Through softmax transform, logit $\rvo$ is not guaranteed to match $\rvr$ or $\hat{\rvr}$. Therefore, we use the $\ell_2$ loss as the learning objective. \textit{Second}, the reward signal in PGE satisfies $\| \hat{\rvr}_t  - \hat{\rvr}_{t+1} \|_1 \le O(t^{-\frac{2}{3}})$. Moreover, its reward signal variation is $V_T^{\hat{\rvr}} \in O(T^{\frac{1}{3}})$, which makes the learning objective stable but incurs additional exploration cost. By contrast, LLE assigns less exploration, based on reward gap estimation, and uses a reward signal that satisfies $\| \hat{\rvr}_t - \hat{\rvr}_{t+1} \|_1 \le \frac{\Delta^2}{\ln{t}}$, which means $V_T^{\hat{\rvr}} \in O(T/\ln{T})$. Directly using \cref{thm:online_learning_regret} gives an undesirable regret. However, this reward signal helps $\rvo_t$ approximate $\hat{\rvr}_t$, and these two properties jointly suffice for convergence.
 
-A complete algorithm is shown in \cref{alg:logit_learning_eps_greedy_exploration}. After random initialization, at each step $t$, the agent executes an $\varepsilon_t$-greedy policy, where with probability $1 - \varepsilon_t$ the agent selects action with the largest logit, or otherwise it uniformly samples an action. LLE tends to match logits with empirical mean rewards by online optimizing $\| \rvo_t - \hat{\rvr}_t\|^2$.
-The exploration degree $\varepsilon_t$ is determined by estimating a lower bound, $\hat{\Delta}_t(k)$, on the reward gap between the best action and the $k$th action. This is to maintain the proper amount of exploration during learning, such that the bias $\| \hat{\rvr}_t - \rvr \|$ is small enough not to disturb the selection of the best action. Unlike in PGE, $\hat{\rvr}_t$ will not be an accurate estimation of $\rvr$. Therefore LLE cannot work in the same way of balancing exploration, estimation and learning. Finally, note that in each step, the agent only updates its value neural network using one gradient descent, therefore LLE is also in an online learning fashion.
+A complete algorithm is shown in \cref{alg:logit_learning_eps_greedy_exploration}. After random initialization, at each step $t$, the agent executes an $\varepsilon_t$-greedy policy, where with probability $1 - \varepsilon_t$ the agent selects action with the largest logit; otherwise it uniformly samples an action. LLE tends to match logits with empirical mean rewards through online optimization of $\| \rvo_t - \hat{\rvr}_t\|^2$.
+The exploration degree $\varepsilon_t$ is determined by estimating a lower bound, $\hat{\Delta}_t(k)$, on the reward gap between the best action and the $k$th action. This is used to maintain a proper amount of exploration during learning, such that the bias $\| \hat{\rvr}_t - \rvr \|$ is sufficiently small to not disturb the selection of the best action. Unlike in PGE, $\hat{\rvr}_t$ will not be an accurate estimate of $\rvr$. Therefore LLE cannot work in the same way to balance exploration, estimation and learning. Finally, note that in each step, the agent only updates its value neural network using one gradient descent step, therefore LLE is also in an online learning fashion.
 
 \begin{algorithm}[t]
 	\caption{Empirical Logit Learning with $\varepsilon$-Greedy Exploration (LLE)}
@@ -63,7 +63,7 @@ The exploration degree $\varepsilon_t$ is determined by estimating a lower bound
 %It seems difficult to improve \cref{thm:policy_gradient_main_result}, as all the three parts of the regret are almost balanced, i.e., uniform exploration ($ T^{\frac{2}{3} + \beta}$, \cref{eq:total_regret_decomposition}), estimation error ($ T^{\frac{2}{3} + \beta} $, \cref{thm:reward_estimation_hoeffding}), and the cumulative expected loss of neural network policies ($ T^{\frac{2}{3} - \frac{\beta}{2}} $, \cref{thm:dynamic_regret_sublinear}). \cref{alg:policy_gradient_uniform_exploration} learns policies in the primal policy space by maximizing $\rvpi\left( \rmW_t \right)^\top \hat{\rvr}_t$. And it is not necessary that $\rvo\left( \rmW_t\right)$ is close to $\hat{\rvr}_t$, due to the homogeneity invariant property of the softmax, i.e, $\rvpi\left(\rvo + a \cdot \rvone \right) = \rvpi(\rvo)$, $\forall a \in \sR$. To show the convergence of $\rvpi\left( \rmW_t \right)^\top \hat{\rvr}_t$, every action needs to be pulled many times, which leads to the undesirable regret results.
 
 
-The next theorem shows that LLE has a nearly optimal regret rate in the stochastic MAB setting.
+The next theorem shows that LLE obtains a nearly optimal regret rate in the stochastic MAB setting.
 \begin{thm}
 \label{thm:logit_learning_main_result}
     Given value neural networks as shown in \cref{fig:nn_policy_value}, with number of hidden nodes $m \ge T^2 / K^2$, learning rate $\eta = \frac{1}{K m}$,  $\alpha > 3$, and $\beta > 256$, the expected regret of \cref{alg:logit_learning_eps_greedy_exploration} satisfies,
@@ -73,27 +73,27 @@ The next theorem shows that LLE has a nearly optimal regret rate in the stochast
 \end{split}
 \end{equation*}
 %where $C \triangleq 2 \max\limits_{k \in [h]}\left\{ \bar{t}(k) \right\} + \pi^2$ is independent with $T$.
-where $C$ is a constant independent with $T$.
+where $C$ is a constant independent of $T$.
 \end{thm}
 \begin{proof} [\bf Proof sketch]
-		By Proposition 2 of \citet{seldin2017improved}, $\hat{\Delta}_t(k)$ is a valid estimate of reward gap $\Delta(k)$, in the sense that for large enough $t$ with high probability, 
+		By Proposition 2 of \citet{seldin2017improved}, $\hat{\Delta}_t(k)$ is a valid estimate of the reward gap $\Delta(k)$, in the sense that for large enough $t$ with high probability, 
 		\begin{equation*}
 		    \Delta(k)/2 \le \hat{\Delta}_t(k) \le 	\Delta(k).
 		\end{equation*}
-		Now given a proper estimate of $\Delta(k)$, note the exploration portion is set to be $\frac{\beta\ln t}{t \hat{\Delta}^2(k)}$.
+		Now given a proper estimate of $\Delta(k)$, note that the exploration portion is set to be $\frac{\beta\ln t}{t \hat{\Delta}^2(k)}$.
 		We can further show that with high probability each action is sampled at least $\frac{25 \ln t}{\Delta^2(k)}$ times with a large enough $\beta$, and therefore with high probability, $\forall k \in [K]$, 
 		\begin{equation*}
 		    | \hat{r}_t(k) - r(k) | \le \Delta(k)/5.
 		\end{equation*}
-		The key of our proof is to show that the learning loss 
+		The key to our proof is to show that the learning loss 
 		\begin{equation*}
 		    \| \rvo_t - \hat{\rvr}_{t}\| \le \Delta(k)/5, \quad \forall k \in [K].
 		\end{equation*}
-		for large enough $t$. Therefore $\forall k \in [K]$,
+		for sufficiently large $t$. Therefore $\forall k \in [K]$,
 		\begin{equation*}
 		    | o_t(k) - r(k) | \le \| \rvo_t - \hat{\rvr}_t\| + | \hat{r}_t(k) - r(k) | \le 2\Delta(k)/5,
 		\end{equation*}
-		i.e., the agent will select the optimal action by greedily acting on value network output $\rvo_t$. To show that, note 
+		i.e., the agent will select the optimal action by greedily acting on the value network output $\rvo_t$. To show this, note 
 		\begin{equation*}
 		\scalemath{0.7}{
 		\begin{split}
@@ -102,11 +102,11 @@ where $C$ is a constant independent with $T$.
 		\end{split}
 		}
 		\end{equation*}
-		where the last inequality is by $\| \hat{\rvr}_t - \hat{\rvr}_{t+1} \|_2 \le \frac{\Delta^2(k)}{\ln{t}}$ because $\hat{\rvr}_t$  and $\hat{\rvr}_{t+1}$ are two consecutive empirical means and each action has been selected at least $\frac{\ln t}{\Delta^2(k)}$ times. Denote $\delta_t = \| \rvo_t - \hat{\rvr}_{t}\|$. Combining with \cref{lem:logit_l2_loss_parameter_smoothness},
+		where the last inequality is by $\| \hat{\rvr}_t - \hat{\rvr}_{t+1} \|_2 \le \frac{\Delta^2(k)}{\ln{t}}$, since $\hat{\rvr}_t$  and $\hat{\rvr}_{t+1}$ are two consecutive empirical means and each action has been selected at least $\frac{\ln t}{\Delta^2(k)}$ times. Denote $\delta_t = \| \rvo_t - \hat{\rvr}_{t}\|$. Combining with \cref{lem:logit_l2_loss_parameter_smoothness}, we obtain
 		\begin{equation*}
 		    \delta_{t+1} \le \sqrt{1 - \frac{1}{2 K} } \cdot \delta_{t} + \frac{\Delta^2(k)}{\ln{t}},
 		\end{equation*}
-		based on which one can further show that $\delta_t \le \Delta(k) / 5$ for large enough $t$. Finally, the probability of selecting a sub-optimal action can be bounded by the sum of the exploration probability and the probability of the rare event when not all the above claims hold, which leads to an upper bound on the expected regret.
+		from which one can further show that $\delta_t \le \Delta(k) / 5$ for sufficiently large $t$. Finally, the probability of selecting a sub-optimal action can be bounded by the sum of the exploration probability and the probability of the rare event that not all of the above claims hold, which leads to an upper bound on the expected regret.
 		\end{proof}
 	\begin{lem}
 		\label{lem:logit_l2_loss_parameter_smoothness}
@@ -119,9 +119,8 @@ where $C$ is a constant independent with $T$.
 	\end{lem}
 	
 \begin{remk}
-	The $O((\ln T)^2)$ regret of LLE is worse than the optimal rate $O(\ln T)$. 
-	This is due to low efficiency of $\varepsilon$-greedy exploration.
+	Note that the $O((\ln T)^2)$ regret of LLE is worse than the optimal rate $O(\ln T)$, which is due to the low efficiency of $\varepsilon$-greedy exploration.
 	In particular, to have a proper $\varepsilon$, one needs to estimate the reward gaps $\Delta(k)$, which causes the extra $\ln T$ factor.
-	A UCB style of exploration that requires no knowledge about the reward gaps may be able to reduce this extra $\ln T$ factor.
+	A UCB style of exploration that requires no knowledge of the reward gaps may be able to reduce this extra $\ln T$ factor.
 \end{remk}
 
